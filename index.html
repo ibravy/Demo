@@ -2,128 +2,83 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Ahmet's Real AI Terminal</title>
+    <title>Ahmet AI Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #030303; color: white; font-family: sans-serif; }
-        .glow-box {
-            box-shadow: 0 0 50px rgba(59, 130, 246, 0.4);
-            border: 1px solid rgba(59, 130, 246, 0.5);
+        body { background-color: #050505; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .glow-border {
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+            border: 1px solid rgba(59, 130, 246, 0.4);
         }
-        .chat-scroll::-webkit-scrollbar { width: 4px; }
-        .chat-scroll::-webkit-scrollbar-thumb { background: #2563eb; border-radius: 10px; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-6">
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
 
-    <div class="glow-box bg-gray-900/80 p-8 rounded-2xl text-center mb-6 w-full max-w-2xl">
-        <h1 class="text-5xl font-bold mb-2 text-blue-500">AI SYSTEM ONLINE</h1>
-        <p class="text-gray-400 text-sm">Powered by Gemini API | User: Ahmet</p>
+    <div class="glow-border bg-gray-900/90 p-6 rounded-2xl text-center mb-6 w-full max-w-xl">
+        <h1 class="text-4xl font-black text-blue-500 tracking-tighter uppercase">System Online</h1>
+        <p class="text-gray-500 text-xs mt-1 uppercase tracking-widest">Secure Link: Ahmet-Session-01</p>
     </div>
 
-    <div class="w-full max-w-2xl bg-[#0a0a0a] border border-gray-800 rounded-3xl flex flex-col h-[500px] shadow-2xl overflow-hidden">
-        <div id="chat-window" class="chat-scroll flex-1 p-6 overflow-y-auto space-y-4 text-sm text-gray-200">
-            <div class="flex justify-start">
-                <div class="bg-blue-600/10 border border-blue-500/20 p-3 rounded-2xl rounded-tl-none max-w-[85%]">
-                    Neural link established. I am now a real AI. Ask me anything!
-                </div>
+    <div class="w-full max-w-xl bg-gray-900 rounded-3xl border border-gray-800 flex flex-col h-[500px] shadow-2xl overflow-hidden">
+        <div id="chat-box" class="flex-1 p-6 overflow-y-auto space-y-4 text-sm scroll-smooth">
+            <div class="bg-blue-600/10 border border-blue-500/20 p-3 rounded-2xl rounded-tl-none text-blue-100 max-w-[85%]">
+                Neural connection active. I am ready to process your requests, Ahmet.
             </div>
         </div>
 
-        <div class="p-4 bg-black border-t border-gray-800 flex gap-3">
-            <input id="user-input" type="text" placeholder="Type a message..." 
-                   class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-4 py-2 focus:outline-none focus:border-blue-500">
-            <button onclick="sendMessage()" class="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded-xl font-bold transition-all">
+        <div class="p-4 bg-black/40 border-t border-gray-800 flex gap-2">
+            <input id="user-input" type="text" placeholder="Type a command..." 
+                   class="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 text-white">
+            <button onclick="askAI()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-bold transition-all active:scale-95">
                 SEND
             </button>
         </div>
     </div>
 
     <script>
-        // PASTE YOUR API KEY HERE
-        const API_KEY = "AIzaSyAyveA5YQoyAl3DTwLlRgEbMSDrQH0hIKA";
+        // STEP 1: Put your key inside the quotes below!
+        const MY_KEY = "AIzaSyAyveA5YQoyAl3DTwLlRgEbMSDrQH0hIKA"; 
 
-        async function sendMessage() {
+        async function askAI() {
             const input = document.getElementById('user-input');
-            const window = document.getElementById('chat-window');
-            const userText = input.value.trim();
+            const chat = document.getElementById('chat-box');
+            const val = input.value.trim();
 
-            if (userText === "") return;
+            if (!val) return;
 
-            // Show User Message
-            window.innerHTML += `<div class="flex justify-end"><div class="bg-blue-600 p-3 rounded-2xl rounded-tr-none max-w-[85%] shadow-lg">${userText}</div></div>`;
+            // Add User Bubble
+            chat.innerHTML += `<div class="flex justify-end"><div class="bg-blue-600 p-3 rounded-2xl rounded-tr-none max-w-[85%]">${val}</div></div>`;
             input.value = "";
-            window.scrollTop = window.scrollHeight;
+            chat.scrollTop = chat.scrollHeight;
 
-            // Show "Thinking..."
-            const thinkingId = "thinking-" + Date.now();
-            window.innerHTML += `<div id="${thinkingId}" class="flex justify-start"><div class="bg-gray-800 p-3 rounded-2xl rounded-tl-none border border-gray-700 italic text-gray-400">AI is thinking...</div></div>`;
-            window.scrollTop = window.scrollHeight;
+            // Add Thinking Bubble
+            const tId = "msg-" + Date.now();
+            chat.innerHTML += `<div id="${tId}" class="flex justify-start"><div class="bg-gray-800 p-3 rounded-2xl rounded-tl-none border border-gray-700 text-gray-400 italic">Processing...</div></div>`;
+            chat.scrollTop = chat.scrollHeight;
 
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${MY_KEY}`;
+                const resp = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: userText }] }]
-                    })
+                    body: JSON.stringify({ contents: [{ parts: [{ text: val }] }] })
                 });
 
-                const data = await response.json();
-                const aiResponse = data.candidates[0].content.parts[0].text;
+                const result = await resp.json();
 
-                // Replace Thinking with real Answer
-                document.getElementById(thinkingId).innerHTML = `<div class="bg-blue-600/10 border border-blue-500/20 p-3 rounded-2xl rounded-tl-none max-w-[85%] text-blue-100">${aiResponse}</div>`;
-            } catch (error) {
-                document.getElementById(thinkingId).innerHTML = `<div class="bg-red-900/20 border border-red-500/20 p-3 rounded-2xl text-red-400 font-bold">Error: Check your API Key!</div>`;
+                if (result.error) {
+                    document.getElementById(tId).innerHTML = `<div class="bg-red-900/30 border border-red-500/50 p-3 rounded-2xl text-red-400">System Error: ${result.error.message}</div>`;
+                } else {
+                    const txt = result.candidates[0].content.parts[0].text;
+                    document.getElementById(tId).innerHTML = `<div class="bg-blue-600/10 border border-blue-500/20 p-3 rounded-2xl rounded-tl-none text-blue-100 max-w-[85%]">${txt}</div>`;
+                }
+            } catch (err) {
+                document.getElementById(tId).innerHTML = `<div class="bg-red-900/30 border border-red-500/50 p-3 rounded-2xl text-red-400">Connection Failed. Check internet or key.</div>`;
             }
-            window.scrollTop = window.scrollHeight;
+            chat.scrollTop = chat.scrollHeight;
         }
 
-        document.getElementById("user-input").addEventListener("keypress", (e) => { if (e.key === "Enter") sendMessage(); });
+        document.getElementById("user-input").addEventListener("keypress", (e) => { if (e.key === "Enter") askAI(); });
     </script>
-// PASTE YOUR API KEY HERE
-const API_KEY = "AIzaSyAyveA5YQoyAl3DTwLlRgEbMSDrQH0hIKA";
-
-async function sendMessage() {
-    const input = document.getElementById('user-input');
-    const window = document.getElementById('chat-window');
-    const userText = input.value.trim();
-
-    if (userText === "") return;
-
-    window.innerHTML += `<div class="flex justify-end"><div class="bg-blue-600 p-3 rounded-2xl rounded-tr-none max-w-[85%] shadow-lg">${userText}</div></div>`;
-    input.value = "";
-    window.scrollTop = window.scrollHeight;
-
-    const thinkingId = "thinking-" + Date.now();
-    window.innerHTML += `<div id="${thinkingId}" class="flex justify-start"><div class="bg-gray-800 p-3 rounded-2xl rounded-tl-none border border-gray-700 italic text-gray-400">AI is thinking...</div></div>`;
-    window.scrollTop = window.scrollHeight;
-
-    try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: userText }] }]
-            })
-        });
-
-        const data = await response.json();
-        
-        if (data.error) {
-            // This shows the REAL error from Google
-            document.getElementById(thinkingId).innerHTML = `<div class="bg-red-900/20 border border-red-500/20 p-3 rounded-2xl text-red-400">Google Error: ${data.error.message}</div>`;
-        } else {
-            const aiResponse = data.candidates[0].content.parts[0].text;
-            document.getElementById(thinkingId).innerHTML = `<div class="bg-blue-600/10 border border-blue-500/20 p-3 rounded-2xl rounded-tl-none max-w-[85%] text-blue-100">${aiResponse}</div>`;
-        }
-    } catch (error) {
-        document.getElementById(thinkingId).innerHTML = `<div class="bg-red-900/20 border border-red-500/20 p-3 rounded-2xl text-red-400 font-bold">Network Error! Try again.</div>`;
-    }
-    window.scrollTop = window.scrollHeight;
-}
-
-document.getElementById("user-input").addEventListener("keypress", (e) => { if (e.key === "Enter") sendMessage(); });
 </body>
 </html>
