@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,28 +13,28 @@
         }
         .chat-scroll::-webkit-scrollbar { width: 4px; }
         .chat-scroll::-webkit-scrollbar-thumb { background: #2563eb; border-radius: 10px; }
+        .bot-msg { background: rgba(37, 99, 235, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-6">
 
     <div class="glow-box bg-gray-900/80 p-10 rounded-2xl text-center mb-8 w-full max-w-2xl backdrop-blur-md">
         <h1 class="text-5xl font-bold mb-3 text-blue-500 tracking-tight">AI SYSTEM ONLINE</h1>
-        <p class="text-gray-400 text-sm tracking-wide">Welcome to Ahmet's AI Demonstration Website.</p>
-        <div class="mt-4 text-xs text-blue-400/60 uppercase tracking-[0.2em] animate-pulse">System Ready...</div>
+        <p class="text-gray-400 text-sm tracking-wide">Authorized Access: Ahmet's Personal Terminal</p>
+        <div class="mt-4 text-xs text-blue-400/60 uppercase tracking-[0.2em] animate-pulse">Neural Link Active</div>
     </div>
 
-    <div class="w-full max-w-2xl bg-[#0a0a0a] border border-gray-800 rounded-3xl flex flex-col h-[400px] shadow-2xl overflow-hidden">
-        
+    <div class="w-full max-w-2xl bg-[#0a0a0a] border border-gray-800 rounded-3xl flex flex-col h-[450px] shadow-2xl overflow-hidden">
         <div id="chat-window" class="chat-scroll flex-1 p-6 overflow-y-auto space-y-4 text-sm">
             <div class="flex justify-start">
-                <div class="bg-blue-600/10 border border-blue-500/20 p-3 rounded-2xl rounded-tl-none max-w-[80%] text-blue-100">
-                    Hello Ahmet. System is fully operational. How can I assist you?
+                <div class="bot-msg p-3 rounded-2xl rounded-tl-none max-w-[80%] text-blue-100">
+                    System Loaded. Hello Ahmet! I am your local AI. I don't need the internet to talk to you. Try asking me about "Crypto", "Python", or just say "Hi"!
                 </div>
             </div>
         </div>
 
         <div class="p-4 bg-black/50 border-t border-gray-800 flex gap-3">
-            <input id="user-input" type="text" placeholder="Enter command..." 
+            <input id="user-input" type="text" placeholder="Type something..." 
                    class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-4 py-2 focus:outline-none focus:border-blue-500 transition-all">
             <button onclick="sendMessage()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-xl font-bold transition-transform active:scale-95">
                 SEND
@@ -42,12 +43,27 @@
     </div>
 
     <script>
+        // THE AI BRAIN (Rule-Based)
+        const aiBrain = {
+            "hi": "Hello Ahmet! How is your day going?",
+            "hello": "Greetings! System is standing by.",
+            "crypto": "Market analysis: Bitcoin and Altcoins are looking interesting today. Always watch the 15m charts on Binance!",
+            "python": "Python is great! Use 'pip install' for libraries like Tkinter or Pygame to build cool apps.",
+            "who are you": "I am Ahmet's Personal AI, running locally on GitHub Pages.",
+            "joke": "Why did the web developer walk out of a restaurant? Because of the table layout!",
+            "roblox": "Lua is a powerful language for Roblox Studio. Need a script for a timer or a checkpoint?",
+            "bye": "System powering down. Goodbye Ahmet!",
+            "default": "Interesting... I am still learning that command. Try asking about Crypto, Python, or Roblox!"
+        };
+
         function sendMessage() {
             const input = document.getElementById('user-input');
             const window = document.getElementById('chat-window');
-            if (input.value.trim() === "") return;
+            const text = input.value.toLowerCase().trim();
 
-            // Ahmet's Message
+            if (text === "") return;
+
+            // Show User Message
             window.innerHTML += `
                 <div class="flex justify-end">
                     <div class="bg-blue-600 p-3 rounded-2xl rounded-tr-none max-w-[80%] shadow-lg">
@@ -55,16 +71,26 @@
                     </div>
                 </div>`;
             
-            // AI "Thinking" Logic
+            // AI Response Logic
             setTimeout(() => {
+                let response = aiBrain["default"];
+                
+                // Check if the user's word is in our brain
+                for (let key in aiBrain) {
+                    if (text.includes(key)) {
+                        response = aiBrain[key];
+                        break;
+                    }
+                }
+
                 window.innerHTML += `
                     <div class="flex justify-start">
-                        <div class="bg-gray-800 p-3 rounded-2xl rounded-tl-none border border-gray-700 max-w-[80%] text-gray-400 italic">
-                            Analyzing data... (Ready for API connection)
+                        <div class="bot-msg p-3 rounded-2xl rounded-tl-none max-w-[80%] text-blue-100 shadow-md">
+                            ${response}
                         </div>
                     </div>`;
                 window.scrollTop = window.scrollHeight;
-            }, 600);
+            }, 500);
 
             input.value = "";
             window.scrollTop = window.scrollHeight;
