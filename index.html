@@ -5,34 +5,37 @@
     <title>Ahmet AI System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #030303; color: white; font-family: sans-serif; }
+        body { background-color: #030303; color: white; font-family: 'Inter', sans-serif; }
         .glow-box {
             box-shadow: 0 0 50px rgba(59, 130, 246, 0.4);
             border: 1px solid rgba(59, 130, 246, 0.5);
         }
-        .chat-scroll::-webkit-scrollbar { width: 5px; }
-        .chat-scroll::-webkit-scrollbar-thumb { background: #1e40af; border-radius: 10px; }
+        .chat-scroll::-webkit-scrollbar { width: 4px; }
+        .chat-scroll::-webkit-scrollbar-thumb { background: #2563eb; border-radius: 10px; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
+<body class="min-h-screen flex flex-col items-center justify-center p-6">
 
-    <div class="glow-box bg-gray-900 p-8 rounded-2xl text-center mb-8 w-full max-w-2xl">
-        <h1 class="text-5xl font-bold mb-2 text-blue-500 tracking-tighter">AI SYSTEM ONLINE</h1>
-        <p class="text-gray-400 text-sm">Authorized User: <span class="text-blue-300 font-bold">AHMET</span></p>
+    <div class="glow-box bg-gray-900/80 p-10 rounded-2xl text-center mb-8 w-full max-w-2xl backdrop-blur-md">
+        <h1 class="text-5xl font-bold mb-3 text-blue-500 tracking-tight">AI SYSTEM ONLINE</h1>
+        <p class="text-gray-400 text-sm tracking-wide">Welcome to Ahmet's AI Demonstration Website.</p>
+        <div class="mt-4 text-xs text-blue-400/60 uppercase tracking-[0.2em] animate-pulse">System Ready...</div>
     </div>
 
-    <div class="w-full max-w-2xl bg-gray-900/50 border border-gray-800 rounded-3xl flex flex-col h-[450px] backdrop-blur-xl shadow-2xl">
+    <div class="w-full max-w-2xl bg-[#0a0a0a] border border-gray-800 rounded-3xl flex flex-col h-[400px] shadow-2xl overflow-hidden">
         
-        <div id="chat-window" class="chat-scroll flex-1 p-6 overflow-y-auto space-y-4">
-            <div class="bg-blue-600/10 p-3 rounded-2xl border border-blue-500/20 self-start max-w-[85%] text-blue-100">
-                System initialized. I am your personal AI assistant. How can I help you today, Ahmet?
+        <div id="chat-window" class="chat-scroll flex-1 p-6 overflow-y-auto space-y-4 text-sm">
+            <div class="flex justify-start">
+                <div class="bg-blue-600/10 border border-blue-500/20 p-3 rounded-2xl rounded-tl-none max-w-[80%] text-blue-100">
+                    Hello Ahmet. System is fully operational. How can I assist you?
+                </div>
             </div>
         </div>
 
-        <div class="p-4 bg-black/40 flex gap-3">
-            <input id="user-input" type="text" placeholder="Send a command..." 
-                   class="flex-1 bg-gray-800/50 border border-gray-700 rounded-2xl px-5 py-3 focus:outline-none focus:border-blue-500 text-white">
-            <button onclick="sendMessage()" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-2xl font-bold transition-all active:scale-95">
+        <div class="p-4 bg-black/50 border-t border-gray-800 flex gap-3">
+            <input id="user-input" type="text" placeholder="Enter command..." 
+                   class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-4 py-2 focus:outline-none focus:border-blue-500 transition-all">
+            <button onclick="sendMessage()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-xl font-bold transition-transform active:scale-95">
                 SEND
             </button>
         </div>
@@ -42,23 +45,22 @@
         function sendMessage() {
             const input = document.getElementById('user-input');
             const window = document.getElementById('chat-window');
-            
             if (input.value.trim() === "") return;
 
-            // Show Ahmet's Message
+            // Ahmet's Message
             window.innerHTML += `
                 <div class="flex justify-end">
-                    <div class="bg-blue-600 p-3 rounded-2xl rounded-tr-none max-w-[85%] shadow-lg">
+                    <div class="bg-blue-600 p-3 rounded-2xl rounded-tr-none max-w-[80%] shadow-lg">
                         ${input.value}
                     </div>
                 </div>`;
             
-            // AI "Thinking" Response
+            // AI "Thinking" Logic
             setTimeout(() => {
                 window.innerHTML += `
                     <div class="flex justify-start">
-                        <div class="bg-gray-800 p-3 rounded-2xl rounded-tl-none border border-gray-700 max-w-[85%] text-gray-300 italic">
-                            Processing request... (Ready to connect to API)
+                        <div class="bg-gray-800 p-3 rounded-2xl rounded-tl-none border border-gray-700 max-w-[80%] text-gray-400 italic">
+                            Analyzing data... (Ready for API connection)
                         </div>
                     </div>`;
                 window.scrollTop = window.scrollHeight;
@@ -68,11 +70,8 @@
             window.scrollTop = window.scrollHeight;
         }
 
-        // Allow pressing "Enter" to send
-        document.getElementById("user-input").addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                sendMessage();
-            }
+        document.getElementById("user-input").addEventListener("keypress", (e) => {
+            if (e.key === "Enter") sendMessage();
         });
     </script>
 
