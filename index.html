@@ -10,18 +10,19 @@
     <div class="w-full max-w-lg bg-gray-900 p-6 rounded-2xl border border-blue-500 shadow-2xl">
         <h1 class="text-3xl font-bold text-blue-500 mb-4 text-center">AI SYSTEM ONLINE</h1>
         
-        <div id="chat-box" class="h-80 overflow-y-auto mb-4 p-4 border border-gray-800 rounded-xl space-y-3 text-sm">
-            <div class="text-blue-300">System Ready. Ready for your command, Ahmet.</div>
+        <div id="chat-box" class="h-80 overflow-y-auto mb-4 p-4 border border-gray-800 rounded-xl space-y-3 text-sm scroll-smooth">
+            <div class="text-blue-300">System Ready, Ahmet. Type your command below.</div>
         </div>
 
         <div class="flex gap-2">
-            <input id="user-in" type="text" placeholder="Type here..." class="flex-1 bg-gray-800 p-3 rounded-lg border border-gray-700 focus:outline-none focus:border-blue-500">
-            <button onclick="runAI()" class="bg-blue-600 px-6 py-3 rounded-lg font-bold hover:bg-blue-500">SEND</button>
+            <input id="user-in" type="text" placeholder="Type here..." 
+                   class="flex-1 bg-gray-800 p-3 rounded-lg border border-gray-700 focus:outline-none focus:border-blue-500">
+            <button onclick="runAI()" class="bg-blue-600 px-6 py-3 rounded-lg font-bold hover:bg-blue-500 active:scale-95 transition-all">SEND</button>
         </div>
     </div>
 
     <script>
-        // STEP: Paste your API Key between the quotes below
+        // STEP: Carefully paste your API Key between the quotes ""
         const KEY = "AIzaSyAyveA5YQoyAl3DTwLlRgEbMSDrQH0hIKA"; 
 
         async function runAI() {
@@ -30,29 +31,40 @@
             const msg = input.value.trim();
             if(!msg) return;
 
-            box.innerHTML += `<div class="text-right"><span class="bg-blue-600 p-2 rounded-lg">${msg}</span></div>`;
+            // Show User Message
+            box.innerHTML += `<div class="text-right"><span class="bg-blue-600 p-2 rounded-lg inline-block max-w-[80%]">${msg}</span></div>`;
             input.value = "";
             
             const tempId = "t-" + Date.now();
-            box.innerHTML += `<div id="${tempId}" class="text-gray-500 italic">Thinking...</div>`;
+            box.innerHTML += `<div id="${tempId}" class="text-gray-500 italic">Neural processing...</div>`;
             box.scrollTop = box.scrollHeight;
 
             try {
-                // This link is fixed to avoid the "v1beta" error from your screenshot
+                // FIXED: Using stable v1 and correct model name to stop the error from your screenshot
                 const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${KEY}`;
-                const r = await fetch(url, {
+                
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({contents: [{parts: [{text: msg}]}]})
                 });
-                const d = await r.json();
-                const reply = d.candidates[0].content.parts[0].text;
-                document.getElementById(tempId).innerHTML = `<div class="text-blue-100 bg-gray-800 p-2 rounded-lg border border-gray-700">${reply}</div>`;
+
+                const data = await response.json();
+
+                if (data.error) {
+                    document.getElementById(tempId).innerHTML = `<div class="text-red-500 bg-red-900/20 p-2 rounded">Error: ${data.error.message}</div>`;
+                } else {
+                    const reply = data.candidates[0].content.parts[0].text;
+                    document.getElementById(tempId).innerHTML = `<div class="text-blue-100 bg-gray-800 p-2 rounded-lg border border-gray-700">${reply}</div>`;
+                }
             } catch (e) {
-                document.getElementById(tempId).innerHTML = `<div class="text-red-500">Error: Check Key or Connection</div>`;
+                document.getElementById(tempId).innerHTML = `<div class="text-red-500 bg-red-900/20 p-2 rounded">Connection failed. Check your key.</div>`;
             }
             box.scrollTop = box.scrollHeight;
         }
+
+        // Handle Enter key for on-screen keyboards
+        document.getElementById("user-in").addEventListener("keypress", (e) => { if (e.key === "Enter") runAI(); });
     </script>
 </body>
 </html>
