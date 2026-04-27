@@ -2,70 +2,69 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Ahmet's GPT Terminal</title>
+    <title>Ahmet AI Site</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-black text-white flex flex-col items-center justify-center min-h-screen p-4">
 
-    <div class="w-full max-w-lg bg-gray-900 p-6 rounded-2xl border border-green-500 shadow-2xl">
-        <h1 class="text-3xl font-bold text-green-500 mb-4 text-center">GPT SYSTEM ONLINE</h1>
+    <div class="w-full max-w-lg bg-gray-900 p-6 rounded-2xl border border-blue-500 shadow-2xl">
+        <h1 class="text-3xl font-bold text-blue-500 mb-4 text-center">AI SYSTEM ONLINE</h1>
         
         <div id="chat-box" class="h-80 overflow-y-auto mb-4 p-4 border border-gray-800 rounded-xl space-y-3 text-sm scroll-smooth">
-            <div class="text-green-300">GPT Engine Connected. Ready for your command, Ahmet.</div>
+            <div class="text-blue-300">System Ready, Ahmet. Type your command below.</div>
         </div>
 
         <div class="flex gap-2">
-            <input id="user-in" type="text" placeholder="Ask GPT anything..." 
-                   class="flex-1 bg-gray-800 p-3 rounded-lg border border-gray-700 focus:outline-none focus:border-green-500">
-            <button onclick="runGPT()" class="bg-green-600 px-6 py-3 rounded-lg font-bold hover:bg-green-500">SEND</button>
+            <input id="user-in" type="text" placeholder="Type here..." 
+                   class="flex-1 bg-gray-800 p-3 rounded-lg border border-gray-700 focus:outline-none focus:border-blue-500">
+            <button onclick="runAI()" class="bg-blue-600 px-6 py-3 rounded-lg font-bold hover:bg-blue-500 active:scale-95 transition-all">SEND</button>
         </div>
     </div>
 
     <script>
-        // STEP: Paste your OpenAI API Key here
-        const OPENAI_KEY = "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"; 
+        // STEP: Carefully paste your API Key between the quotes ""
+        const KEY = "PASTE_YOUR_KEY_HERE"; 
 
-        async function runGPT() {
+        async function runAI() {
             const box = document.getElementById('chat-box');
             const input = document.getElementById('user-in');
             const msg = input.value.trim();
             if(!msg) return;
 
-            box.innerHTML += `<div class="text-right"><span class="bg-green-700 p-2 rounded-lg inline-block">${msg}</span></div>`;
+            // Show User Message
+            box.innerHTML += `<div class="text-right"><span class="bg-blue-600 p-2 rounded-lg inline-block max-w-[80%]">${msg}</span></div>`;
             input.value = "";
             
             const tempId = "t-" + Date.now();
-            box.innerHTML += `<div id="${tempId}" class="text-gray-500 italic">GPT is thinking...</div>`;
+            box.innerHTML += `<div id="${tempId}" class="text-gray-500 italic">Neural processing...</div>`;
             box.scrollTop = box.scrollHeight;
 
             try {
-                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                // FIXED: Using stable v1 and correct model name to stop the error from your screenshot
+                const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${KEY}`;
+                
+                const response = await fetch(url, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${OPENAI_KEY}`
-                    },
-                    body: JSON.stringify({
-                        model: "gpt-4o-mini", // Fast and cheap version
-                        messages: [{role: "user", content: msg}]
-                    })
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({contents: [{parts: [{text: msg}]}]})
                 });
 
                 const data = await response.json();
 
                 if (data.error) {
-                    document.getElementById(tempId).innerHTML = `<div class="text-red-500">Error: ${data.error.message}</div>`;
+                    document.getElementById(tempId).innerHTML = `<div class="text-red-500 bg-red-900/20 p-2 rounded">Error: ${data.error.message}</div>`;
                 } else {
-                    const reply = data.choices[0].message.content;
-                    document.getElementById(tempId).innerHTML = `<div class="text-gray-100 bg-gray-800 p-2 rounded-lg border border-gray-700">${reply}</div>`;
+                    const reply = data.candidates[0].content.parts[0].text;
+                    document.getElementById(tempId).innerHTML = `<div class="text-blue-100 bg-gray-800 p-2 rounded-lg border border-gray-700">${reply}</div>`;
                 }
             } catch (e) {
-                document.getElementById(tempId).innerHTML = `<div class="text-red-500">Connection Failed. Check your OpenAI Key.</div>`;
+                document.getElementById(tempId).innerHTML = `<div class="text-red-500 bg-red-900/20 p-2 rounded">Connection failed. Check your key.</div>`;
             }
             box.scrollTop = box.scrollHeight;
         }
 
-        document.getElementById("user-in").addEventListener("keypress", (e) => { if (e.key === "Enter") runGPT(); });
+        // Handle Enter key for on-screen keyboards
+        document.getElementById("user-in").addEventListener("keypress", (e) => { if (e.key === "Enter") runAI(); });
     </script>
 </body>
 </html>
