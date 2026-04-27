@@ -82,5 +82,48 @@
 
         document.getElementById("user-input").addEventListener("keypress", (e) => { if (e.key === "Enter") sendMessage(); });
     </script>
+// PASTE YOUR API KEY HERE
+const API_KEY = "AIzaSyAyveA5YQoyAl3DTwLlRgEbMSDrQH0hIKA";
+
+async function sendMessage() {
+    const input = document.getElementById('user-input');
+    const window = document.getElementById('chat-window');
+    const userText = input.value.trim();
+
+    if (userText === "") return;
+
+    window.innerHTML += `<div class="flex justify-end"><div class="bg-blue-600 p-3 rounded-2xl rounded-tr-none max-w-[85%] shadow-lg">${userText}</div></div>`;
+    input.value = "";
+    window.scrollTop = window.scrollHeight;
+
+    const thinkingId = "thinking-" + Date.now();
+    window.innerHTML += `<div id="${thinkingId}" class="flex justify-start"><div class="bg-gray-800 p-3 rounded-2xl rounded-tl-none border border-gray-700 italic text-gray-400">AI is thinking...</div></div>`;
+    window.scrollTop = window.scrollHeight;
+
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: userText }] }]
+            })
+        });
+
+        const data = await response.json();
+        
+        if (data.error) {
+            // This shows the REAL error from Google
+            document.getElementById(thinkingId).innerHTML = `<div class="bg-red-900/20 border border-red-500/20 p-3 rounded-2xl text-red-400">Google Error: ${data.error.message}</div>`;
+        } else {
+            const aiResponse = data.candidates[0].content.parts[0].text;
+            document.getElementById(thinkingId).innerHTML = `<div class="bg-blue-600/10 border border-blue-500/20 p-3 rounded-2xl rounded-tl-none max-w-[85%] text-blue-100">${aiResponse}</div>`;
+        }
+    } catch (error) {
+        document.getElementById(thinkingId).innerHTML = `<div class="bg-red-900/20 border border-red-500/20 p-3 rounded-2xl text-red-400 font-bold">Network Error! Try again.</div>`;
+    }
+    window.scrollTop = window.scrollHeight;
+}
+
+document.getElementById("user-input").addEventListener("keypress", (e) => { if (e.key === "Enter") sendMessage(); });
 </body>
 </html>
