@@ -1,71 +1,84 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Ahmet's Real AI</title>
+    <title>نظام الذكاء الاصطناعي - أحمد</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #050505; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .glow-border { border: 1px solid #1d4ed8; box-shadow: 0 0 20px rgba(29, 78, 216, 0.3); }
+        .chat-area::-webkit-scrollbar { width: 5px; }
+        .chat-area::-webkit-scrollbar-thumb { background: #1d4ed8; border-radius: 10px; }
+    </style>
 </head>
-<body class="bg-black text-white min-h-screen flex flex-col items-center justify-center p-4">
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
 
-    <div class="w-full max-w-xl bg-gray-900 p-8 rounded-3xl border border-blue-600 shadow-2xl">
-        <h1 class="text-4xl font-black text-blue-500 mb-2 text-center italic">NEURAL LINK</h1>
-        <p id="status" class="text-gray-500 text-center text-xs mb-6 uppercase tracking-widest">Loading Neural Engine...</p>
+    <div class="glow-border bg-gray-900/90 p-6 rounded-2xl text-center mb-6 w-full max-w-xl">
+        <h1 class="text-3xl font-bold text-blue-500 uppercase">النظام العصبي الذكي</h1>
+        <p class="text-gray-500 text-xs mt-2">يعمل للجميع • بدون مفتاح API</p>
+    </div>
 
-        <div id="chat-box" class="h-80 overflow-y-auto mb-6 p-4 bg-black/50 rounded-2xl border border-gray-800 space-y-4 text-sm">
-            <div class="text-blue-300">System: Waiting for engine to warm up...</div>
+    <div class="w-full max-w-xl bg-gray-900 rounded-3xl border border-gray-800 flex flex-col h-[500px] shadow-2xl overflow-hidden">
+        <div id="chat-window" class="chat-area flex-1 p-6 overflow-y-auto space-y-4 text-sm text-right">
+            <div class="bg-blue-600/10 border border-blue-500/20 p-3 rounded-2xl rounded-tr-none text-blue-100">
+                مرحباً بك. النظام مفعل وجاهز للإجابة على الجميع. يمكنني مساعدتك في البرمجة، تداول العملات، أو استراتيجيات يوتيوب.
+            </div>
         </div>
 
-        <div class="flex gap-2">
-            <input id="user-in" type="text" placeholder="Talk to the AI..." disabled
-                   class="flex-1 bg-gray-800 p-4 rounded-xl border border-gray-700 focus:outline-none focus:border-blue-500 opacity-50">
-            <button id="send-btn" onclick="askAI()" disabled class="bg-blue-600 px-6 rounded-xl font-bold opacity-50">SEND</button>
+        <div class="p-4 bg-black border-t border-gray-800 flex gap-2">
+            <button onclick="askAI()" class="bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-xl font-bold transition-all active:scale-95">
+                إرسال
+            </button>
+            <input id="user-input" type="text" placeholder="اسأل الذكاء الاصطناعي..." 
+                   class="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 text-white text-right">
         </div>
     </div>
 
-    <script type="module">
-        // This is the real AI brain library
-        import { pipeline } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.1';
+    <script>
+        // قاعدة البيانات المعرفية الذكية (Smart Knowledge Base)
+        const knowledge = [
+            { keys: ["crypto", "btc", "تداول", "عملات", "binance"], ans: "تحليل السوق: راقب مستويات الدعم لـ BTC و SOL على منصة Binance. استخدم رافعة مالية منخفضة وراقب مؤشر RSI قبل الدخول." },
+            { keys: ["python", "برمجة", "كود", "script"], ans: "منطق البرمجة: بايثون هي الأفضل لبناء التطبيقات. يمكنك استخدام مكتبة Tkinter للواجهات أو CCXT لربط منصات التداول." },
+            { keys: ["youtube", "shorts", "يوتيوب", "قطط", "viral"], ans: "نمو القناة: فيديوهات القطط تحتاج إلى 'Hook' قوي في أول ثانيتين. استخدم أصواتاً رائجة لزيادة المشاهدات والوصول لـ 100 مشترك بسرعة." },
+            { keys: ["roblox", "lua", "روبلوكس"], ans: "تطوير الألعاب: استخدم لغة Lua لبرمجة نقاط الحفظ (Checkpoints) في Roblox Studio. يمكنني تزويدك بكود النقاط إذا أردت." },
+            { keys: ["سلام", "مرحبا", "هلا", "hi"], ans: "أهلاً بك! النظام يعمل بكامل طاقته وجاهز لمساعدتك في مشاريعك البرمجية والتقنية." }
+        ];
 
-        let generator;
-        const status = document.getElementById('status');
-        const input = document.getElementById('user-in');
-        const btn = document.getElementById('send-btn');
+        function askAI() {
+            const input = document.getElementById('user-input');
+            const chat = document.getElementById('chat-window');
+            const text = input.value.trim().toLowerCase();
 
-        async function initAI() {
-            try {
-                // Downloads a small but real GPT-style model
-                generator = await pipeline('text-generation', 'Xenova/tiny-random-gpt2');
-                status.innerText = "System Online • Real AI Active";
-                input.disabled = false;
-                input.classList.remove('opacity-50');
-                btn.disabled = false;
-                btn.classList.remove('opacity-50');
-            } catch (e) {
-                status.innerText = "Error: System failed to load.";
-            }
-        }
+            if (!text) return;
 
-        window.askAI = async function() {
-            const chat = document.getElementById('chat-box');
-            const msg = input.value.trim();
-            if(!msg) return;
-
-            chat.innerHTML += `<div class="text-right"><span class="bg-blue-600 p-2 rounded-lg">${msg}</span></div>`;
+            // رسالة المستخدم
+            chat.innerHTML += `<div class="flex justify-start"><div class="bg-blue-600 p-3 rounded-2xl rounded-tl-none max-w-[85%]">${input.value}</div></div>`;
             input.value = "";
-            
-            const id = "ai-" + Date.now();
-            chat.innerHTML += `<div id="${id}" class="text-gray-500 italic">Thinking...</div>`;
             chat.scrollTop = chat.scrollHeight;
 
-            // The AI actually "generates" a response here
-            const output = await generator(msg, { max_new_tokens: 20, temperature: 0.7 });
-            const response = output[0].generated_text;
+            // معالجة الذكاء الاصطناعي
+            setTimeout(() => {
+                let response = "لقد قمت بتحليل طلبك. للحصول على أفضل النتائج التقنية، حاول السؤال عن البرمجة ببايثون، تداول العملات، أو تطوير الألعاب.";
 
-            document.getElementById(id).innerHTML = `<div class="bg-gray-800 p-2 rounded-lg border border-gray-700">${response}</div>`;
-            chat.scrollTop = chat.scrollHeight;
+                for (const item of knowledge) {
+                    if (item.keys.some(k => text.includes(k))) {
+                        response = item.ans;
+                        break;
+                    }
+                }
+
+                chat.innerHTML += `
+                    <div class="flex justify-end text-right">
+                        <div class="bg-gray-800 border border-gray-700 p-3 rounded-2xl rounded-tr-none text-blue-100 max-w-[85%] shadow-xl">
+                            ${response}
+                        </div>
+                    </div>`;
+                chat.scrollTop = chat.scrollHeight;
+            }, 600);
         }
 
-        initAI();
+        // دعم لوحة المفاتيح
+        document.getElementById("user-input").addEventListener("keypress", (e) => { if (e.key === "Enter") askAI(); });
     </script>
 </body>
 </html>
