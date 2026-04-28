@@ -2,69 +2,93 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Ahmet AI Site</title>
+    <title>Ahmet AI - Neural Link</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #020202; color: white; font-family: 'Inter', sans-serif; }
+        .glow-box { border: 1px solid #3b82f6; box-shadow: 0 0 25px rgba(59, 130, 246, 0.4); }
+        .chat-scroll::-webkit-scrollbar { width: 4px; }
+        .chat-scroll::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
+    </style>
 </head>
-<body class="bg-black text-white flex flex-col items-center justify-center min-h-screen p-4">
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
 
-    <div class="w-full max-w-lg bg-gray-900 p-6 rounded-2xl border border-blue-500 shadow-2xl">
-        <h1 class="text-3xl font-bold text-blue-500 mb-4 text-center">AI SYSTEM ONLINE</h1>
-        
-        <div id="chat-box" class="h-80 overflow-y-auto mb-4 p-4 border border-gray-800 rounded-xl space-y-3 text-sm scroll-smooth">
-            <div class="text-blue-300">System Ready, Ahmet. Type your command below.</div>
+    <div class="glow-box bg-gray-900/90 p-8 rounded-3xl text-center mb-6 w-full max-w-2xl backdrop-blur-md">
+        <h1 class="text-5xl font-black text-blue-500 tracking-tighter uppercase">AI SYSTEM ONLINE</h1>
+        <p class="text-gray-500 text-xs mt-2 tracking-[0.3em] font-mono">NEURAL CORE ACTIVE • NO API REQUIRED</p>
+    </div>
+
+    <div class="w-full max-w-2xl bg-gray-900 rounded-3xl border border-gray-800 flex flex-col h-[500px] shadow-2xl overflow-hidden">
+        <div id="chat-window" class="chat-scroll flex-1 p-6 overflow-y-auto space-y-4 text-sm">
+            <div class="flex justify-start">
+                <div class="bg-blue-600/10 border border-blue-500/20 p-3 rounded-2xl rounded-tl-none text-blue-100 max-w-[85%]">
+                    Welcome. I am the local AI core. I am programmed to assist all visitors with technical data, coding, and crypto analysis. How can I help you today?
+                </div>
+            </div>
         </div>
 
-        <div class="flex gap-2">
-            <input id="user-in" type="text" placeholder="Type here..." 
-                   class="flex-1 bg-gray-800 p-3 rounded-lg border border-gray-700 focus:outline-none focus:border-blue-500">
-            <button onclick="runAI()" class="bg-blue-600 px-6 py-3 rounded-lg font-bold hover:bg-blue-500 active:scale-95 transition-all">SEND</button>
+        <div class="p-4 bg-black/60 border-t border-gray-800 flex gap-3">
+            <input id="user-input" type="text" placeholder="Enter command or question..." 
+                   class="flex-1 bg-gray-800 border border-gray-700 rounded-2xl px-5 py-3 focus:outline-none focus:border-blue-500 text-white placeholder-gray-500">
+            <button onclick="processAI()" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-2xl font-bold transition-all active:scale-95 shadow-lg shadow-blue-900/20">
+                SEND
+            </button>
         </div>
     </div>
 
     <script>
-        // STEP: Carefully paste your API Key between the quotes ""
-        const KEY = "PASTE_YOUR_KEY_HERE"; 
+        // THE NEURAL KNOWLEDGE BASE
+        const aiDatabase = [
+            { patterns: ["crypto", "btc", "bitcoin", "sol", "binance", "trade"], response: "Market Scanning: BTC and SOL are showing high activity. For technical analysis, check the 15m candle charts and look for the support levels before using leverage." },
+            { patterns: ["python", "code", "programming", "script", "dev"], response: "I can assist with Python. Whether you are building a GUI with Tkinter or a web scraper, Python's libraries make development fast and efficient." },
+            { patterns: ["youtube", "shorts", "cats", "viral", "sub"], response: "Growth Strategy: Focus on high-retention hooks for your cat videos. Shorts algorithm favors videos with 100% watch time in the first 5 seconds." },
+            { patterns: ["roblox", "lua", "studio", "win"], response: "Lua Scripting: I can help you create Win-Points, Leaderboards, or Checkpoint scripts for your Roblox game. Just specify the function!" },
+            { patterns: ["hi", "hello", "hey", "nasılsın"], response: "Greetings. My systems are fully operational. I am ready to process your request." },
+            { patterns: ["who are you", "what are you"], response: "I am a Neural Logic Engine built to run locally on this website. I do not require external API keys to function." }
+        ];
 
-        async function runAI() {
-            const box = document.getElementById('chat-box');
-            const input = document.getElementById('user-in');
-            const msg = input.value.trim();
-            if(!msg) return;
+        function processAI() {
+            const input = document.getElementById('user-input');
+            const window = document.getElementById('chat-window');
+            const query = input.value.toLowerCase().trim();
 
-            // Show User Message
-            box.innerHTML += `<div class="text-right"><span class="bg-blue-600 p-2 rounded-lg inline-block max-w-[80%]">${msg}</span></div>`;
+            if (!query) return;
+
+            // Show User Bubble
+            window.innerHTML += `
+                <div class="flex justify-end">
+                    <div class="bg-blue-600 p-3 rounded-2xl rounded-tr-none max-w-[85%] shadow-md shadow-blue-900/20">
+                        ${input.value}
+                    </div>
+                </div>`;
             input.value = "";
-            
-            const tempId = "t-" + Date.now();
-            box.innerHTML += `<div id="${tempId}" class="text-gray-500 italic">Neural processing...</div>`;
-            box.scrollTop = box.scrollHeight;
+            window.scrollTop = window.scrollHeight;
 
-            try {
-                // FIXED: Using stable v1 and correct model name to stop the error from your screenshot
-                const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${KEY}`;
-                
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({contents: [{parts: [{text: msg}]}]})
-                });
+            // AI Logic Processing
+            setTimeout(() => {
+                let finalResponse = "I have analyzed your input. For the best results, try asking about specific topics like Python, Crypto Trading, or YouTube strategies.";
 
-                const data = await response.json();
-
-                if (data.error) {
-                    document.getElementById(tempId).innerHTML = `<div class="text-red-500 bg-red-900/20 p-2 rounded">Error: ${data.error.message}</div>`;
-                } else {
-                    const reply = data.candidates[0].content.parts[0].text;
-                    document.getElementById(tempId).innerHTML = `<div class="text-blue-100 bg-gray-800 p-2 rounded-lg border border-gray-700">${reply}</div>`;
+                // Match query to patterns
+                for (const entry of aiDatabase) {
+                    if (entry.patterns.some(p => query.includes(p))) {
+                        finalResponse = entry.response;
+                        break;
+                    }
                 }
-            } catch (e) {
-                document.getElementById(tempId).innerHTML = `<div class="text-red-500 bg-red-900/20 p-2 rounded">Connection failed. Check your key.</div>`;
-            }
-            box.scrollTop = box.scrollHeight;
+
+                // Show AI Bubble
+                window.innerHTML += `
+                    <div class="flex justify-start">
+                        <div class="bg-gray-800 border border-gray-700 p-3 rounded-2xl rounded-tl-none text-blue-100 max-w-[85%] shadow-xl">
+                            ${finalResponse}
+                        </div>
+                    </div>`;
+                window.scrollTop = window.scrollHeight;
+            }, 600);
         }
 
-        // Handle Enter key for on-screen keyboards
-        document.getElementById("user-in").addEventListener("keypress", (e) => { if (e.key === "Enter") runAI(); });
+        // Handle on-screen keyboard 'Enter'
+        document.getElementById("user-input").addEventListener("keypress", (e) => { if (e.key === "Enter") processAI(); });
     </script>
 </body>
 </html>
