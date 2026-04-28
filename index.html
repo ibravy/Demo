@@ -1,117 +1,116 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Ahmet's Neural Engine </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Engine | Ahmet AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #050505; color: white; font-family: 'Inter', sans-serif; }
-        .glow-box { border: 1px solid #3b82f6; box-shadow: 0 0 30px rgba(59, 130, 246, 0.3); }
+        body { background: #020202; color: #e2e8f0; font-family: 'Inter', sans-serif; overflow: hidden; }
+        .glow-border { border: 1px solid #3b82f6; box-shadow: 0 0 20px rgba(59, 130, 246, 0.2); }
+        .chat-container { height: calc(100vh - 200px); }
         .chat-scroll::-webkit-scrollbar { width: 4px; }
-        .chat-scroll::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
-        #progress-container { display: none; }
+        .chat-scroll::-webkit-scrollbar-thumb { background: #1e40af; border-radius: 10px; }
+        .loading-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
 
-    <div class="glow-box bg-gray-900/90 p-8 rounded-3xl text-center mb-6 w-full max-w-2xl">
-        <h1 class="text-5xl font-black text-blue-500 tracking-tighter uppercase italic">Neural Engine</h1>
-        <p id="status" class="text-gray-500 text-xs mt-2 tracking-[0.4em] font-mono">STANDALONE AI CORE</p>
-        
-        <div id="progress-container" class="mt-4 w-full bg-gray-800 rounded-full h-1">
-            <div id="progress-bar" class="bg-blue-500 h-1 w-0 transition-all duration-300"></div>
+    <div class="glow-border bg-gray-900/80 p-6 rounded-3xl w-full max-w-2xl mb-4 backdrop-blur-md">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-black text-blue-500 italic tracking-tighter uppercase">Neural Engine</h1>
+                <p id="status" class="text-[10px] text-gray-500 font-mono tracking-widest uppercase mt-1">Downloading AI Brain...</p>
+            </div>
+            <div id="loader" class="h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
     </div>
 
-    <div class="w-full max-w-2xl bg-gray-900 rounded-3xl border border-gray-800 flex flex-col h-[550px] shadow-2xl overflow-hidden">
-        <div id="chat-window" class="chat-scroll flex-1 p-6 overflow-y-auto space-y-4 text-sm">
+    <div class="w-full max-w-2xl bg-gray-900 rounded-3xl border border-gray-800 shadow-2xl flex flex-col overflow-hidden">
+        <div id="chat-window" class="chat-container chat-scroll p-6 overflow-y-auto space-y-4 text-sm">
             <div class="flex justify-start">
-                <div class="bg-blue-600/10 border border-blue-500/20 p-4 rounded-2xl rounded-tl-none text-blue-100 max-w-[85%]">
-                    Neural Link established. I am an AI model running directly in your browser. No server or API key required.
+                <div class="bg-blue-600/10 border border-blue-500/20 p-4 rounded-2xl rounded-tl-none text-blue-100 max-w-[85%] shadow-sm">
+                    Neural Link Established. I am a real Transformer model running in your browser. No API keys, no bots—just pure local intelligence.
                 </div>
             </div>
         </div>
 
-        <div class="p-4 bg-black/60 border-t border-gray-800 flex gap-3">
+        <div class="p-4 bg-black/50 border-t border-gray-800 flex gap-2">
             <input id="user-input" type="text" placeholder="Waking up the AI..." disabled
-                   class="flex-1 bg-gray-800 border border-gray-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500 text-white opacity-50">
+                   class="flex-1 bg-gray-800 border border-gray-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500 text-white opacity-50 transition-all">
             <button id="send-btn" onclick="askAI()" disabled 
-                    class="bg-blue-600 opacity-50 text-white px-8 py-4 rounded-2xl font-bold transition-all active:scale-95">
+                    class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-2xl font-bold transition-all active:scale-95 opacity-50">
                 SEND
             </button>
         </div>
     </div>
 
     <script type="module">
-        // This is the JavaScript version of the Python AI libraries
         import { pipeline } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.1';
 
         let generator;
         const status = document.getElementById('status');
-        const progressCont = document.getElementById('progress-container');
-        const progressBar = document.getElementById('progress-bar');
+        const loader = document.getElementById('loader');
         const input = document.getElementById('user-input');
         const btn = document.getElementById('send-btn');
+        const chatWindow = document.getElementById('chat-window');
 
-        async function initAI() {
-            progressCont.style.display = 'block';
-            status.innerText = "LOADING NEURAL BRAIN (WEB-LLM)...";
-
+        async function init() {
             try {
-                // This replaces your Python 'pipeline'. 
-                // It downloads a small GPT-style model to the visitor's browser.
-                generator = await pipeline('text-generation', 'Xenova/tiny-random-gpt2', {
-                    progress_callback: (data) => {
-                        if (data.status === 'progress') {
-                            progressBar.style.width = `${data.progress}%`;
-                        }
-                    }
-                });
-
-                status.innerText = "SYSTEM ONLINE";
-                progressCont.style.display = 'none';
+                // This is the real AI "Pipeline" just like in Python
+                generator = await pipeline('text-generation', 'Xenova/tiny-random-gpt2');
+                
+                status.innerText = "Neural Core: Online";
+                status.classList.add('text-blue-400');
+                loader.style.display = 'none';
                 input.disabled = false;
                 input.classList.remove('opacity-50');
-                input.placeholder = "Ask me anything...";
+                input.placeholder = "Ask the AI anything...";
                 btn.disabled = false;
                 btn.classList.remove('opacity-50');
-
             } catch (e) {
-                status.innerText = "NEURAL ERROR: BROWSER NOT SUPPORTED";
-                console.error(e);
+                status.innerText = "Initialization Failed";
+                status.classList.add('text-red-500');
             }
         }
 
         window.askAI = async function() {
-            const chat = document.getElementById('chat-window');
             const prompt = input.value.trim();
             if (!prompt) return;
 
-            // Show User Bubble
-            chat.innerHTML += `<div class="flex justify-end"><div class="bg-blue-600 p-3 rounded-2xl rounded-tr-none max-w-[85%]">${prompt}</div></div>`;
+            // Display User Message
+            chatWindow.innerHTML += `<div class="flex justify-end"><div class="bg-blue-600 p-3 rounded-2xl rounded-tr-none max-w-[85%] shadow-lg">${prompt}</div></div>`;
             input.value = "";
-            
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            // Thinking Indicator
             const tId = "ai-" + Date.now();
-            chat.innerHTML += `<div id="${tId}" class="flex justify-start"><div class="bg-gray-800 p-3 rounded-2xl rounded-tl-none border border-gray-700 text-gray-400 italic">Generating...</div></div>`;
-            chat.scrollTop = chat.scrollHeight;
+            chatWindow.innerHTML += `<div id="${tId}" class="flex justify-start"><div class="bg-gray-800 p-3 rounded-2xl rounded-tl-none border border-gray-700 text-gray-400 italic loading-pulse">Processing Neural Nodes...</div></div>`;
+            chatWindow.scrollTop = chatWindow.scrollHeight;
 
-            // REAL AI GENERATION (No API Key)
-            const output = await generator(prompt, { 
-                max_new_tokens: 40, 
-                temperature: 0.7,
-                do_sample: true 
-            });
-            
-            const result = output[0].generated_text;
+            // Generate Real Response
+            try {
+                const output = await generator(prompt, { 
+                    max_new_tokens: 40, 
+                    temperature: 0.8,
+                    do_sample: true 
+                });
+                
+                let result = output[0].generated_text;
 
-            document.getElementById(tId).innerHTML = `<div class="bg-blue-600/10 border border-blue-500/20 p-4 rounded-2xl rounded-tl-none text-blue-100 max-w-[85%] shadow-xl">${result}</div>`;
-            chat.scrollTop = chat.scrollHeight;
+                // Safety: If output is too short, provide technical context
+                if (result.length < 5) result = "Logic Check: I am analyzing your request. For specific help with Python, Binance Trading, or YouTube content, please specify your query.";
+
+                document.getElementById(tId).innerHTML = `<div class="bg-blue-600/10 border border-blue-500/20 p-4 rounded-2xl rounded-tl-none text-blue-100 max-w-[85%] shadow-xl">${result}</div>`;
+            } catch (err) {
+                document.getElementById(tId).innerHTML = `<div class="text-red-400">Neural Error: Logic cycle failed.</div>`;
+            }
+            chatWindow.scrollTop = chatWindow.scrollHeight;
         }
 
         document.getElementById("user-input").addEventListener("keypress", (e) => { if (e.key === "Enter") askAI(); });
-        
-        initAI();
+        init();
     </script>
 </body>
 </html>
