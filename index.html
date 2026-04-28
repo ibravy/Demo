@@ -2,93 +2,88 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Ahmet AI - Neural Link</title>
+    <title>Ahmet AI - Neural Core</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #020202; color: white; font-family: 'Inter', sans-serif; }
         .glow-box { border: 1px solid #3b82f6; box-shadow: 0 0 25px rgba(59, 130, 246, 0.4); }
         .chat-scroll::-webkit-scrollbar { width: 4px; }
         .chat-scroll::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
+        .ai-bubble { background: rgba(37, 99, 235, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
 
-    <div class="glow-box bg-gray-900/90 p-8 rounded-3xl text-center mb-6 w-full max-w-2xl backdrop-blur-md">
+    <div class="glow-box bg-gray-900/90 p-8 rounded-3xl text-center mb-6 w-full max-w-2xl">
         <h1 class="text-5xl font-black text-blue-500 tracking-tighter uppercase">AI SYSTEM ONLINE</h1>
-        <p class="text-gray-500 text-xs mt-2 tracking-[0.3em] font-mono">NEURAL CORE ACTIVE • NO API REQUIRED</p>
+        <p class="text-gray-500 text-xs mt-2 tracking-[0.3em] font-mono uppercase">Neural Core Alpha • Local Intelligence</p>
     </div>
 
-    <div class="w-full max-w-2xl bg-gray-900 rounded-3xl border border-gray-800 flex flex-col h-[500px] shadow-2xl overflow-hidden">
+    <div class="w-full max-w-2xl bg-gray-900 rounded-3xl border border-gray-800 flex flex-col h-[550px] shadow-2xl overflow-hidden">
         <div id="chat-window" class="chat-scroll flex-1 p-6 overflow-y-auto space-y-4 text-sm">
             <div class="flex justify-start">
-                <div class="bg-blue-600/10 border border-blue-500/20 p-3 rounded-2xl rounded-tl-none text-blue-100 max-w-[85%]">
-                    Welcome. I am the local AI core. I am programmed to assist all visitors with technical data, coding, and crypto analysis. How can I help you today?
+                <div class="ai-bubble p-4 rounded-2xl rounded-tl-none text-blue-100 max-w-[85%]">
+                    Neural link established. I am Ahmet's custom AI. I can analyze Crypto, write Python code, or help with YouTube growth. What is your request?
                 </div>
             </div>
         </div>
 
         <div class="p-4 bg-black/60 border-t border-gray-800 flex gap-3">
-            <input id="user-input" type="text" placeholder="Enter command or question..." 
-                   class="flex-1 bg-gray-800 border border-gray-700 rounded-2xl px-5 py-3 focus:outline-none focus:border-blue-500 text-white placeholder-gray-500">
-            <button onclick="processAI()" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-2xl font-bold transition-all active:scale-95 shadow-lg shadow-blue-900/20">
+            <input id="user-input" type="text" placeholder="Ask me anything..." 
+                   class="flex-1 bg-gray-800 border border-gray-700 rounded-2xl px-5 py-3 focus:outline-none focus:border-blue-500 text-white">
+            <button onclick="handleAI()" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-2xl font-bold transition-all active:scale-95 shadow-lg shadow-blue-900/20">
                 SEND
             </button>
         </div>
     </div>
 
     <script>
-        // THE NEURAL KNOWLEDGE BASE
-        const aiDatabase = [
-            { patterns: ["crypto", "btc", "bitcoin", "sol", "binance", "trade"], response: "Market Scanning: BTC and SOL are showing high activity. For technical analysis, check the 15m candle charts and look for the support levels before using leverage." },
-            { patterns: ["python", "code", "programming", "script", "dev"], response: "I can assist with Python. Whether you are building a GUI with Tkinter or a web scraper, Python's libraries make development fast and efficient." },
-            { patterns: ["youtube", "shorts", "cats", "viral", "sub"], response: "Growth Strategy: Focus on high-retention hooks for your cat videos. Shorts algorithm favors videos with 100% watch time in the first 5 seconds." },
-            { patterns: ["roblox", "lua", "studio", "win"], response: "Lua Scripting: I can help you create Win-Points, Leaderboards, or Checkpoint scripts for your Roblox game. Just specify the function!" },
-            { patterns: ["hi", "hello", "hey", "nasılsın"], response: "Greetings. My systems are fully operational. I am ready to process your request." },
-            { patterns: ["who are you", "what are you"], response: "I am a Neural Logic Engine built to run locally on this website. I do not require external API keys to function." }
+        const brain = [
+            { tags: ["btc", "bitcoin", "crypto", "trade", "binance", "sol", "eth"], reply: "Market Intelligence: BTC and SOL are the main focus. Look for support levels on the 4-hour chart. If the RSI is below 30, it might be a buy zone. Always manage your leverage!" },
+            { tags: ["python", "code", "programming", "script", "app", "dev"], reply: "Coding Task: Python is the best choice for this. Use 'pip install' for libraries. For a GUI, use Tkinter. For data, use Pandas. What specific script should we build?" },
+            { tags: ["youtube", "shorts", "viral", "cats", "views", "subscriber"], reply: "Algorithm Strategy: Your cat shorts need a high-speed 'hook' in the first 1.5 seconds. Use 'Trending' audio at low volume (5%) to boost reach in the feed." },
+            { tags: ["roblox", "lua", "studio", "scripting", "win"], reply: "Roblox Studio: Use a 'Touched' event for checkpoints. If you want a leaderboard, I can give you the 'DataStoreService' script logic. What's the game idea?" },
+            { tags: ["who", "what", "name", "creator"], reply: "System Info: I am a custom Neural Engine designed by Ahmet to run locally. I don't need external APIs to provide expert data." },
+            { tags: ["hi", "hello", "hey", "nasılsın", "sa"], reply: "Status: Connection active. I am ready to process your commands. Should we look at Crypto, Coding, or YouTube today?" },
+            { tags: ["price", "money", "rich", "sats"], reply: "Financial Data: 1000SATS and other meme coins are high risk. Always keep 70% of your portfolio in stable assets like BTC/SOL for long-term growth." }
         ];
 
-        function processAI() {
+        function handleAI() {
             const input = document.getElementById('user-input');
-            const window = document.getElementById('chat-window');
-            const query = input.value.toLowerCase().trim();
+            const chat = document.getElementById('chat-window');
+            const rawText = input.value.trim();
+            const text = rawText.toLowerCase();
 
-            if (!query) return;
+            if (!rawText) return;
 
-            // Show User Bubble
-            window.innerHTML += `
-                <div class="flex justify-end">
-                    <div class="bg-blue-600 p-3 rounded-2xl rounded-tr-none max-w-[85%] shadow-md shadow-blue-900/20">
-                        ${input.value}
-                    </div>
-                </div>`;
+            // User Message
+            chat.innerHTML += `<div class="flex justify-end"><div class="bg-blue-600 p-3 rounded-2xl rounded-tr-none max-w-[85%] shadow-md">${rawText}</div></div>`;
             input.value = "";
-            window.scrollTop = window.scrollHeight;
+            chat.scrollTop = chat.scrollHeight;
 
-            // AI Logic Processing
+            // AI Processing
             setTimeout(() => {
-                let finalResponse = "I have analyzed your input. For the best results, try asking about specific topics like Python, Crypto Trading, or YouTube strategies.";
+                let response = "Interesting point. From a technical perspective, we should look deeper into the data. Can you specify if you are asking about Coding, Crypto, or YouTube?";
 
-                // Match query to patterns
-                for (const entry of aiDatabase) {
-                    if (entry.patterns.some(p => query.includes(p))) {
-                        finalResponse = entry.response;
+                // Smart Search
+                for (const item of brain) {
+                    if (item.tags.some(tag => text.includes(tag))) {
+                        response = item.reply;
                         break;
                     }
                 }
 
-                // Show AI Bubble
-                window.innerHTML += `
+                chat.innerHTML += `
                     <div class="flex justify-start">
-                        <div class="bg-gray-800 border border-gray-700 p-3 rounded-2xl rounded-tl-none text-blue-100 max-w-[85%] shadow-xl">
-                            ${finalResponse}
+                        <div class="ai-bubble p-4 rounded-2xl rounded-tl-none text-blue-100 max-w-[85%] shadow-xl">
+                            ${response}
                         </div>
                     </div>`;
-                window.scrollTop = window.scrollHeight;
-            }, 600);
+                chat.scrollTop = chat.scrollHeight;
+            }, 500);
         }
 
-        // Handle on-screen keyboard 'Enter'
-        document.getElementById("user-input").addEventListener("keypress", (e) => { if (e.key === "Enter") processAI(); });
+        document.getElementById("user-input").addEventListener("keypress", (e) => { if (e.key === "Enter") handleAI(); });
     </script>
 </body>
 </html>
