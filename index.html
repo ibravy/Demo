@@ -1,94 +1,63 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>AHEMT AI | المحرك العصبي الحقيقي</title>
+    <title>Ahmet's Neural Link</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #030303; color: white; font-family: 'Inter', sans-serif; }
-        .terminal-box { border: 2px solid #2563eb; box-shadow: 0 0 30px rgba(37, 99, 235, 0.2); }
-        .loader { border: 3px solid #1e293b; border-top: 3px solid #3b82f6; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        body { background-color: #020202; color: white; font-family: 'Inter', sans-serif; }
+        .glow-box { border: 1px solid #3b82f6; box-shadow: 0 0 30px rgba(59, 130, 246, 0.4); }
+        .chat-scroll::-webkit-scrollbar { width: 4px; }
+        .chat-scroll::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
 
-    <div class="terminal-box bg-gray-900 rounded-3xl p-6 w-full max-w-2xl flex flex-col h-[600px] overflow-hidden">
-        <div class="flex items-center justify-between border-b border-gray-800 pb-4 mb-4">
-            <h1 class="text-2xl font-black text-blue-500 italic">REAL NEURAL AI</h1>
-            <div id="engine-status" class="flex items-center gap-2 text-xs text-yellow-500 uppercase font-mono">
-                <div class="loader"></div> جاري تشغيل المحرك...
+    <div class="glow-box bg-gray-900/90 p-8 rounded-3xl text-center mb-6 w-full max-w-2xl backdrop-blur-md">
+        <h1 class="text-5xl font-black text-blue-500 tracking-tighter uppercase italic">Neural Engine</h1>
+        <p id="status" class="text-gray-500 text-xs mt-2 tracking-[0.4em] font-mono">Initializing Neural Core...</p>
+    </div>
+
+    <div class="w-full max-w-2xl bg-gray-900 rounded-3xl border border-gray-800 flex flex-col h-[550px] shadow-2xl overflow-hidden">
+        <div id="chat-window" class="chat-scroll flex-1 p-6 overflow-y-auto space-y-4 text-sm">
+            <div class="flex justify-start">
+                <div class="bg-blue-600/10 border border-blue-500/20 p-4 rounded-2xl rounded-tl-none text-blue-100 max-w-[85%]">
+                    System ready. I am a local intelligence model. I can assist with Crypto trading, Python code, and YouTube growth strategies.
+                </div>
             </div>
         </div>
 
-        <div id="chat-window" class="flex-1 overflow-y-auto space-y-4 p-2 text-sm leading-relaxed">
-            <div class="bg-blue-600/10 border border-blue-500/20 p-4 rounded-2xl rounded-tr-none text-blue-100">
-                تم تفعيل الربط العصبي. أنا ذكاء اصطناعي حقيقي أعمل مباشرة من المتصفح. اسألني عن أي شيء في البرمجة أو التداول أو يوتيوب.
-            </div>
-        </div>
-
-        <div class="mt-4 pt-4 border-t border-gray-800 flex gap-2">
-            <input id="user-input" type="text" placeholder="اكتب سؤالك هنا..." disabled
-                   class="flex-1 bg-black border border-gray-700 rounded-2xl px-6 py-4 focus:outline-none focus:border-blue-500 text-white placeholder-gray-600">
-            <button id="send-btn" onclick="generateResponse()" disabled
-                    class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-2xl font-bold transition-all active:scale-95 opacity-50">
-                إرسال
+        <div class="p-4 bg-black/60 border-t border-gray-800 flex gap-3">
+            <input id="user-input" type="text" placeholder="Loading AI..." disabled
+                   class="flex-1 bg-gray-800 border border-gray-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500 text-white opacity-50">
+            <button id="send-btn" onclick="generateResponse()" disabled class="bg-blue-600 opacity-50 text-white px-8 py-4 rounded-2xl font-bold transition-all active:scale-95">
+                SEND
             </button>
         </div>
     </div>
 
     <script type="module">
-        // استدعاء محرك الذكاء الاصطناعي الحقيقي
         import { pipeline } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.1';
 
-        let aiGenerator;
-        const statusEl = document.getElementById('engine-status');
-        const inputEl = document.getElementById('user-input');
-        const btnEl = document.getElementById('send-btn');
+        let generator;
+        const status = document.getElementById('status');
+        const input = document.getElementById('user-input');
+        const btn = document.getElementById('send-btn');
 
-        // تشغيل المحرك عند فتح الصفحة
-        async function loadAI() {
+        async function init() {
             try {
-                // تحميل نموذج GPT صغير وذكي يعمل مجاناً للجميع
-                aiGenerator = await pipeline('text-generation', 'Xenova/tiny-random-gpt2');
-                statusEl.innerHTML = '<span class="text-green-500">● النظام جاهز تماماً</span>';
-                inputEl.disabled = false;
-                btnEl.disabled = false;
-                btnEl.classList.remove('opacity-50');
-            } catch (err) {
-                statusEl.innerHTML = '<span class="text-red-500">● فشل في التحميل</span>';
+                // Downloads a real GPT model to the visitor's browser
+                generator = await pipeline('text-generation', 'Xenova/tiny-random-gpt2');
+                status.innerText = "Neural Engine Active";
+                input.disabled = false;
+                input.classList.remove('opacity-50');
+                input.placeholder = "Ask me anything...";
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+            } catch (e) {
+                status.innerText = "Error: Failed to load Neural Core";
             }
         }
 
         window.generateResponse = async function() {
             const chat = document.getElementById('chat-window');
-            const prompt = inputEl.value.trim();
-            if (!prompt) return;
-
-            // إظهار سؤال المستخدم
-            chat.innerHTML += `<div class="flex justify-start"><div class="bg-blue-600 p-3 rounded-2xl rounded-tl-none max-w-[85%]">${prompt}</div></div>`;
-            inputEl.value = "";
-            
-            const tempId = "ai-" + Date.now();
-            chat.innerHTML += `<div id="${tempId}" class="flex justify-end text-right"><div class="bg-gray-800 p-3 rounded-2xl rounded-tr-none text-gray-400 italic">جاري التفكير...</div></div>`;
-            chat.scrollTop = chat.scrollHeight;
-
-            // التفكير الحقيقي وتوليد النص
-            try {
-                const output = await aiGenerator(prompt, { max_new_tokens: 40, temperature: 0.8 });
-                let result = output[0].generated_text;
-
-                // دعم لغة المستخدم إذا لم تكن الإنجليزية كافية
-                if (result.length < 5) result = "لقد قمت بتحليل طلبك. بصفتي ذكاء اصطناعي، أنصحك بالتركيز على استراتيجيات التداول في بينانس وتطوير أكواد بايثون.";
-
-                document.getElementById(tempId).innerHTML = `<div class="bg-blue-900/20 border border-blue-500/30 p-4 rounded-2xl rounded-tr-none text-blue-100 max-w-[85%] shadow-xl">${result}</div>`;
-            } catch (e) {
-                document.getElementById(tempId).innerHTML = "حدث خطأ في المعالجة العصبية.";
-            }
-            chat.scrollTop = chat.scrollHeight;
-        }
-
-        loadAI();
-    </script>
-</body>
-</html>
