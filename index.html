@@ -2,88 +2,70 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Ahmet AI - Neural Core</title>
+    <title>Ahmet's Real AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { background-color: #020202; color: white; font-family: 'Inter', sans-serif; }
-        .glow-box { border: 1px solid #3b82f6; box-shadow: 0 0 25px rgba(59, 130, 246, 0.4); }
-        .chat-scroll::-webkit-scrollbar { width: 4px; }
-        .chat-scroll::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
-        .ai-bubble { background: rgba(37, 99, 235, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); }
-    </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
+<body class="bg-black text-white min-h-screen flex flex-col items-center justify-center p-4">
 
-    <div class="glow-box bg-gray-900/90 p-8 rounded-3xl text-center mb-6 w-full max-w-2xl">
-        <h1 class="text-5xl font-black text-blue-500 tracking-tighter uppercase">AI SYSTEM ONLINE</h1>
-        <p class="text-gray-500 text-xs mt-2 tracking-[0.3em] font-mono uppercase">Neural Core Alpha • Local Intelligence</p>
-    </div>
+    <div class="w-full max-w-xl bg-gray-900 p-8 rounded-3xl border border-blue-600 shadow-2xl">
+        <h1 class="text-4xl font-black text-blue-500 mb-2 text-center italic">NEURAL LINK</h1>
+        <p id="status" class="text-gray-500 text-center text-xs mb-6 uppercase tracking-widest">Loading Neural Engine...</p>
 
-    <div class="w-full max-w-2xl bg-gray-900 rounded-3xl border border-gray-800 flex flex-col h-[550px] shadow-2xl overflow-hidden">
-        <div id="chat-window" class="chat-scroll flex-1 p-6 overflow-y-auto space-y-4 text-sm">
-            <div class="flex justify-start">
-                <div class="ai-bubble p-4 rounded-2xl rounded-tl-none text-blue-100 max-w-[85%]">
-                    Neural link established. I am Ahmet's custom AI. I can analyze Crypto, write Python code, or help with YouTube growth. What is your request?
-                </div>
-            </div>
+        <div id="chat-box" class="h-80 overflow-y-auto mb-6 p-4 bg-black/50 rounded-2xl border border-gray-800 space-y-4 text-sm">
+            <div class="text-blue-300">System: Waiting for engine to warm up...</div>
         </div>
 
-        <div class="p-4 bg-black/60 border-t border-gray-800 flex gap-3">
-            <input id="user-input" type="text" placeholder="Ask me anything..." 
-                   class="flex-1 bg-gray-800 border border-gray-700 rounded-2xl px-5 py-3 focus:outline-none focus:border-blue-500 text-white">
-            <button onclick="handleAI()" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-2xl font-bold transition-all active:scale-95 shadow-lg shadow-blue-900/20">
-                SEND
-            </button>
+        <div class="flex gap-2">
+            <input id="user-in" type="text" placeholder="Talk to the AI..." disabled
+                   class="flex-1 bg-gray-800 p-4 rounded-xl border border-gray-700 focus:outline-none focus:border-blue-500 opacity-50">
+            <button id="send-btn" onclick="askAI()" disabled class="bg-blue-600 px-6 rounded-xl font-bold opacity-50">SEND</button>
         </div>
     </div>
 
-    <script>
-        const brain = [
-            { tags: ["btc", "bitcoin", "crypto", "trade", "binance", "sol", "eth"], reply: "Market Intelligence: BTC and SOL are the main focus. Look for support levels on the 4-hour chart. If the RSI is below 30, it might be a buy zone. Always manage your leverage!" },
-            { tags: ["python", "code", "programming", "script", "app", "dev"], reply: "Coding Task: Python is the best choice for this. Use 'pip install' for libraries. For a GUI, use Tkinter. For data, use Pandas. What specific script should we build?" },
-            { tags: ["youtube", "shorts", "viral", "cats", "views", "subscriber"], reply: "Algorithm Strategy: Your cat shorts need a high-speed 'hook' in the first 1.5 seconds. Use 'Trending' audio at low volume (5%) to boost reach in the feed." },
-            { tags: ["roblox", "lua", "studio", "scripting", "win"], reply: "Roblox Studio: Use a 'Touched' event for checkpoints. If you want a leaderboard, I can give you the 'DataStoreService' script logic. What's the game idea?" },
-            { tags: ["who", "what", "name", "creator"], reply: "System Info: I am a custom Neural Engine designed by Ahmet to run locally. I don't need external APIs to provide expert data." },
-            { tags: ["hi", "hello", "hey", "nasılsın", "sa"], reply: "Status: Connection active. I am ready to process your commands. Should we look at Crypto, Coding, or YouTube today?" },
-            { tags: ["price", "money", "rich", "sats"], reply: "Financial Data: 1000SATS and other meme coins are high risk. Always keep 70% of your portfolio in stable assets like BTC/SOL for long-term growth." }
-        ];
+    <script type="module">
+        // This is the real AI brain library
+        import { pipeline } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.1';
 
-        function handleAI() {
-            const input = document.getElementById('user-input');
-            const chat = document.getElementById('chat-window');
-            const rawText = input.value.trim();
-            const text = rawText.toLowerCase();
+        let generator;
+        const status = document.getElementById('status');
+        const input = document.getElementById('user-in');
+        const btn = document.getElementById('send-btn');
 
-            if (!rawText) return;
-
-            // User Message
-            chat.innerHTML += `<div class="flex justify-end"><div class="bg-blue-600 p-3 rounded-2xl rounded-tr-none max-w-[85%] shadow-md">${rawText}</div></div>`;
-            input.value = "";
-            chat.scrollTop = chat.scrollHeight;
-
-            // AI Processing
-            setTimeout(() => {
-                let response = "Interesting point. From a technical perspective, we should look deeper into the data. Can you specify if you are asking about Coding, Crypto, or YouTube?";
-
-                // Smart Search
-                for (const item of brain) {
-                    if (item.tags.some(tag => text.includes(tag))) {
-                        response = item.reply;
-                        break;
-                    }
-                }
-
-                chat.innerHTML += `
-                    <div class="flex justify-start">
-                        <div class="ai-bubble p-4 rounded-2xl rounded-tl-none text-blue-100 max-w-[85%] shadow-xl">
-                            ${response}
-                        </div>
-                    </div>`;
-                chat.scrollTop = chat.scrollHeight;
-            }, 500);
+        async function initAI() {
+            try {
+                // Downloads a small but real GPT-style model
+                generator = await pipeline('text-generation', 'Xenova/tiny-random-gpt2');
+                status.innerText = "System Online • Real AI Active";
+                input.disabled = false;
+                input.classList.remove('opacity-50');
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+            } catch (e) {
+                status.innerText = "Error: System failed to load.";
+            }
         }
 
-        document.getElementById("user-input").addEventListener("keypress", (e) => { if (e.key === "Enter") handleAI(); });
+        window.askAI = async function() {
+            const chat = document.getElementById('chat-box');
+            const msg = input.value.trim();
+            if(!msg) return;
+
+            chat.innerHTML += `<div class="text-right"><span class="bg-blue-600 p-2 rounded-lg">${msg}</span></div>`;
+            input.value = "";
+            
+            const id = "ai-" + Date.now();
+            chat.innerHTML += `<div id="${id}" class="text-gray-500 italic">Thinking...</div>`;
+            chat.scrollTop = chat.scrollHeight;
+
+            // The AI actually "generates" a response here
+            const output = await generator(msg, { max_new_tokens: 20, temperature: 0.7 });
+            const response = output[0].generated_text;
+
+            document.getElementById(id).innerHTML = `<div class="bg-gray-800 p-2 rounded-lg border border-gray-700">${response}</div>`;
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        initAI();
     </script>
 </body>
 </html>
