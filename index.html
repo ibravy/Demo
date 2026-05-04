@@ -3,163 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Studio | Gemini Style</title>
+    <title>Problem Solver AI</title>
     <style>
-        :root {
-            --gemini-purple: #8e24aa;
-            --google-gray: #3c4043;
-            --light-gray: #70757a;
-            --border: #dfe1e5;
-            --bg-input: #f0f4f9;
-        }
-
+        /* CSS STYLING */
         body {
-            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
-            margin: 0;
+            background-color: #0f172a;
+            color: #f1f5f9;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #ffffff;
+            margin: 0;
         }
 
-        /* Header */
-        .header {
-            width: 100%;
-            max-width: 900px;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .brand { display: flex; align-items: center; gap: 10px; font-weight: 500; font-size: 1.2rem; }
-        .brand-icon { width: 22px; height: 22px; background: linear-gradient(45deg, #4285f4, #8e24aa); border-radius: 50%; }
-
-        /* Chat Display */
-        #chat-window {
-            flex: 1;
-            width: 100%;
-            max-width: 750px;
-            padding: 20px;
-            overflow-y: auto;
-            margin-bottom: 120px;
-        }
-
-        .message { margin-bottom: 30px; line-height: 1.6; font-size: 1rem; }
-        .user-label { font-weight: 600; color: var(--google-gray); margin-bottom: 4px; }
-        .ai-label { font-weight: 600; color: var(--gemini-purple); margin-bottom: 4px; }
-
-        /* Input Bar (Gemini Style) */
-        .input-area {
-            position: fixed;
-            bottom: 30px;
+        .container {
+            background: #1e293b;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
             width: 90%;
-            max-width: 700px;
-            background: var(--bg-input);
-            border-radius: 32px;
-            padding: 8px 20px;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            max-width: 650px;
+            text-align: center;
+            border: 1px solid #334155;
         }
 
-        input {
-            flex: 1;
-            border: none;
-            background: transparent;
-            outline: none;
-            padding: 12px;
+        h1 { margin-top: 0; color: #3b82f6; }
+
+        .badge {
+            font-size: 0.4em;
+            background: #3b82f6;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            vertical-align: middle;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            background: #0f172a;
+            border: 1px solid #3b82f6;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 10px;
+            resize: none;
             font-size: 1rem;
+            box-sizing: border-box;
+            margin: 20px 0;
+            outline: none;
         }
 
-        .btn-group { display: flex; gap: 15px; padding-left: 10px; }
-        .action-btn { background: none; border: none; cursor: pointer; font-size: 1.3rem; color: var(--light-gray); transition: 0.2s; }
-        .action-btn:hover { color: var(--gemini-purple); }
+        textarea:focus {
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+        }
 
-        /* Print Settings */
-        @media print {
-            .input-area, .header, .action-btn { display: none !important; }
-            #chat-window { margin: 0; padding: 0; }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .hidden { display: none; }
+
+        #solutionArea {
+            text-align: left;
+            background: #0f172a;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .reset-btn {
+            background: transparent;
+            border: 1px solid #475569;
+            margin-top: 15px;
+        }
+
+        .reset-btn:hover {
+            background: #334155;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="brand">
-            <div class="brand-icon"></div>
-            <span>AI Studio</span>
+    <div class="container">
+        <h1>Problem Solver <span class="badge">Engine</span></h1>
+        <p>Input your technical challenge for a structured solution path.</p>
+        
+        <div id="inputSection">
+            <textarea id="problemInput" placeholder="e.g., My Python script is returning a 'NoneType' error when fetching API data..."></textarea>
+            <button onclick="solve()">Analyze & Solve</button>
         </div>
-        <button class="action-btn" onclick="window.print()" title="Print Chat">🖨️</button>
-    </div>
 
-    <div id="chat-window">
-        <div class="message">
-            <div class="ai-label">AI Studio</div>
-            <div>Hello! I am an AI assistant. Type below and I'll give you an answer.</div>
+        <div id="loader" class="hidden">
+            <div class="spinner"></div>
+            <p>Running diagnostics...</p>
         </div>
-    </div>
 
-    <div class="input-area">
-        <input type="text" id="user-input" placeholder="Ask anything..." onkeypress="if(event.key==='Enter') askAI()">
-        <div class="btn-group">
-            <button class="action-btn" onclick="askAI()">➤</button>
+        <div id="solutionArea" class="hidden">
+            <h3 style="color: #60a5fa; margin-top: 0;">Diagnostic Result:</h3>
+            <div id="resultText"></div>
+            <button onclick="reset()" class="reset-btn">New Analysis</button>
         </div>
     </div>
 
     <script>
-        // Get a FREE token from https://huggingface.co/settings/tokens
-        const API_TOKEN = "hf_YOUR_TOKEN_HERE"; 
-        
-        async function askAI() {
-            const inputField = document.getElementById('user-input');
-            const chatWindow = document.getElementById('chat-window');
-            const prompt = inputField.value.trim();
-
-            if (!prompt) return;
-
-            // 1. Add User Message
-            addMessage("You", prompt, 'user-label');
-            inputField.value = "";
-
-            // 2. Add Loading State
-            const loadingDiv = addMessage("AI Studio", "Processing...", 'ai-label');
-
-            try {
-                // 3. Call Hugging Face Inference API
-                const response = await fetch("https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2", {
-                    headers: { Authorization: `Bearer ${API_TOKEN}` },
-                    method: "POST",
-                    body: JSON.stringify({ inputs: prompt }),
-                });
-
-                const result = await response.json();
-                
-                // 4. Update with actual answer
-                // Mistral returns an array with generated_text
-                let aiText = result[0].generated_text || "I couldn't generate a response.";
-                
-                // Clean up: Remove the prompt from the response if the model includes it
-                aiText = aiText.replace(prompt, "").trim();
-
-                loadingDiv.innerHTML = `<div class="ai-label">AI Studio</div><div>${aiText.replace(/\n/g, '<br>')}</div>`;
-            } catch (error) {
-                loadingDiv.innerHTML = `<div class="ai-label">AI Studio</div><div style="color:red;">Error connecting to the AI model.</div>`;
+        /* JAVASCRIPT LOGIC */
+        function solve() {
+            const input = document.getElementById('problemInput').value.trim();
+            
+            if (input.length < 5) {
+                alert("Please describe the problem in more detail.");
+                return;
             }
 
-            chatWindow.scrollTop = chatWindow.scrollHeight;
+            document.getElementById('inputSection').classList.add('hidden');
+            document.getElementById('loader').classList.remove('hidden');
+
+            // Simulate "thinking" time
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+                document.getElementById('solutionArea').classList.remove('hidden');
+                
+                const resultText = document.getElementById('resultText');
+                resultText.innerHTML = generateLogic(input);
+            }, 1800);
         }
 
-        function addMessage(sender, text, labelClass) {
-            const chatWindow = document.getElementById('chat-window');
-            const div = document.createElement('div');
-            div.className = 'message';
-            div.innerHTML = `<div class="${labelClass}">${sender}</div><div>${text}</div>`;
-            chatWindow.appendChild(div);
-            return div;
+        function generateLogic(text) {
+            const query = text.toLowerCase();
+            
+            // Logic keywords for specific categories
+            if (query.includes("code") || query.includes("error") || query.includes("script")) {
+                return `
+                    <p><strong>Initial Check:</strong> Verify syntax and indentation in your environment.</p>
+                    <p><strong>Path A:</strong> Wrap the suspected block in a try/except block to catch the specific exception.</p>
+                    <p><strong>Path B:</strong> Print the variables immediately before the error line to ensure they aren't 'null' or 'undefined'.</p>
+                `;
+            } else if (query.includes("slow") || query.includes("performance")) {
+                return `
+                    <p><strong>Bottleneck Found:</strong> Resource allocation seems suboptimal.</p>
+                    <p><strong>Fix:</strong> Check for memory leaks or unclosed loops. Ensure hardware acceleration is enabled if applicable.</p>
+                `;
+            } else {
+                return `
+                    <p><strong>General Analysis:</strong> The problem is complex but solvable.</p>
+                    <p><strong>Recommendation:</strong> Isolate the core variable. Test the system in segments to find where the logic breaks down. Documentation review is advised.</p>
+                `;
+            }
+        }
+
+        function reset() {
+            document.getElementById('problemInput').value = "";
+            document.getElementById('solutionArea').classList.add('hidden');
+            document.getElementById('inputSection').classList.remove('hidden');
         }
     </script>
-
 </body>
 </html>
