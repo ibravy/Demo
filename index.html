@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Interface</title>
+    <title>AI Studio | Voice Edition</title>
     <style>
         :root {
             --gemini-purple: #8e24aa;
@@ -15,7 +15,6 @@
         body {
             font-family: 'Google Sans', Roboto, Arial, sans-serif;
             margin: 0;
-            padding: 0;
             background-color: #ffffff;
             display: flex;
             justify-content: center;
@@ -28,93 +27,40 @@
             padding: 80px 20px;
         }
 
-        /* Top Branding */
-        .brand {
+        .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; }
+        .brand-icon { width: 24px; height: 24px; background: linear-gradient(45deg, #4285f4, #8e24aa); border-radius: 50%; }
+
+        h1 { color: var(--gemini-purple); font-size: 2.2rem; font-weight: 400; }
+
+        /* Chat Controls */
+        .controls {
+            margin-top: 30px;
             display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 1.1rem;
-            margin-bottom: 40px;
+            flex-direction: column;
+            gap: 15px;
         }
 
-        .brand-icon {
-            width: 24px;
-            height: 24px;
-            background: linear-gradient(45deg, #4285f4, #8e24aa);
-            border-radius: 50%;
-        }
-
-        /* Header Section */
-        .url-bar {
-            font-size: 0.85rem;
-            color: var(--light-gray);
-            margin-bottom: 8px;
-        }
-
-        h1 {
-            color: var(--gemini-purple);
-            font-size: 2.2rem;
-            font-weight: 400;
-            margin: 0 0 20px 0;
-        }
-
-        .hero-text {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            margin-bottom: 40px;
-        }
-
-        hr {
-            border: 0;
-            border-top: 1px solid var(--border);
-            margin: 40px 0;
-        }
-
-        /* AI Module Cards */
-        .ai-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-        }
-
-        .ai-card {
-            padding: 24px;
+        #chat-output {
+            padding: 20px;
             border: 1px solid var(--border);
-            border-radius: 16px;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            color: inherit;
+            border-radius: 12px;
+            min-height: 100px;
+            background: #f8f9fa;
         }
 
-        .ai-card:hover {
-            background-color: #f8f9fa;
-            border-color: var(--gemini-purple);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        .btn-group { display: flex; gap: 10px; }
+
+        button {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: white;
+            cursor: pointer;
+            transition: 0.2s;
         }
 
-        .card-label {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--gemini-purple);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 12px;
-        }
-
-        .ai-card h3 {
-            margin: 0 0 10px 0;
-            font-weight: 500;
-        }
-
-        .ai-card p {
-            font-size: 0.9rem;
-            color: var(--light-gray);
-            margin: 0;
-        }
-
-        @media (max-width: 600px) {
-            .ai-grid { grid-template-columns: 1fr; }
-        }
+        button:hover { background: #f1f3f4; }
+        .mic-active { color: white; background: #d93025 !important; border-color: #d93025; }
     </style>
 </head>
 <body>
@@ -125,41 +71,56 @@
             <strong>AI Studio</strong>
         </div>
 
-        <div class="url-bar">https://ai.yoursite.com</div>
-        <h1>Meet Your AI Assistant</h1>
+        <h1>Interactive AI Assistant</h1>
         
-        <p class="hero-text">
-            Get help with writing, planning, and brainstorming. Experience the power of 
-            generative AI models directly in your browser.
-        </p>
-
-        <hr>
-
-        <div class="ai-grid">
-            <a href="#" class="ai-card">
-                <div class="card-label">Generative Text</div>
-                <h3>Chat Interface</h3>
-                <p>Natural language processing for complex problem solving.</p>
-            </a>
-
-            <a href="#" class="ai-card">
-                <div class="card-label">Developer Tools</div>
-                <h3>API Integration</h3>
-                <p>Connect your Python applications to state-of-the-art models.</p>
-            </a>
-
-            <a href="#" class="ai-card">
-                <div class="card-label">Vision</div>
-                <h3>Image Analysis</h3>
-                <p>Understand and describe visual data with AI vision models.</p>
-            </a>
-
-            <a href="#" class="ai-card">
-                <div class="card-label">Code</div>
-                <h3>Script Generation</h3>
-                <p>Automate your workflow with AI-powered code suggestions.</p>
-            </a>
+        <div class="controls">
+            <div id="chat-output">Click the microphone and say something...</div>
+            
+            <div class="btn-group">
+                <button id="mic-btn">🎤 Start Listening</button>
+                <button id="speak-btn">🔊 Read Response</button>
+            </div>
         </div>
+
+        <script>
+            // Initialize Speech Recognition (Listening)
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            const output = document.getElementById('chat-output');
+            const micBtn = document.getElementById('mic-btn');
+
+            recognition.onstart = () => {
+                micBtn.textContent = "🛑 Stop Listening";
+                micBtn.classList.add('mic-active');
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                output.innerText = "You said: " + transcript;
+                // Here is where you would normally send 'transcript' to your Gemini API
+            };
+
+            recognition.onend = () => {
+                micBtn.textContent = "🎤 Start Listening";
+                micBtn.classList.remove('mic-active');
+            };
+
+            micBtn.addEventListener('click', () => {
+                recognition.start();
+            });
+
+            // Initialize Speech Synthesis (Talking)
+            document.getElementById('speak-btn').addEventListener('click', () => {
+                const text = output.innerText;
+                const utterance = new SpeechSynthesisUtterance(text);
+                
+                // Optional: Customize the voice
+                utterance.pitch = 1;
+                utterance.rate = 1;
+                
+                window.speechSynthesis.speak(utterance);
+            });
+        </script>
     </div>
 
 </body>
