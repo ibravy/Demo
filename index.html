@@ -3,19 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Studio | Voice Edition</title>
+    <title>AI Studio | Voice & Print</title>
     <style>
         :root {
             --gemini-purple: #8e24aa;
             --google-gray: #3c4043;
-            --light-gray: #70757a;
             --border: #dfe1e5;
         }
 
         body {
             font-family: 'Google Sans', Roboto, Arial, sans-serif;
             margin: 0;
-            background-color: #ffffff;
             display: flex;
             justify-content: center;
             color: var(--google-gray);
@@ -24,43 +22,46 @@
         .container {
             max-width: 850px;
             width: 100%;
-            padding: 80px 20px;
+            padding: 60px 20px;
         }
 
-        .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; }
+        /* Branding */
+        .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
         .brand-icon { width: 24px; height: 24px; background: linear-gradient(45deg, #4285f4, #8e24aa); border-radius: 50%; }
 
-        h1 { color: var(--gemini-purple); font-size: 2.2rem; font-weight: 400; }
+        h1 { color: var(--gemini-purple); font-weight: 400; }
 
-        /* Chat Controls */
-        .controls {
-            margin-top: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        #chat-output {
-            padding: 20px;
+        /* Content Area */
+        #printable-content {
+            padding: 30px;
             border: 1px solid var(--border);
-            border-radius: 12px;
-            min-height: 100px;
-            background: #f8f9fa;
+            border-radius: 16px;
+            background: #ffffff;
+            min-height: 200px;
+            margin-bottom: 20px;
         }
 
-        .btn-group { display: flex; gap: 10px; }
-
+        /* Controls - Hidden during Printing */
+        .controls { display: flex; gap: 10px; margin-top: 20px; }
+        
         button {
-            padding: 10px 20px;
-            border-radius: 20px;
+            padding: 12px 24px;
+            border-radius: 24px;
             border: 1px solid var(--border);
             background: white;
             cursor: pointer;
-            transition: 0.2s;
+            font-weight: 500;
         }
 
-        button:hover { background: #f1f3f4; }
-        .mic-active { color: white; background: #d93025 !important; border-color: #d93025; }
+        button:hover { background: #f8f9fa; border-color: var(--gemini-purple); }
+
+        /* PRINT STYLES: This hides the buttons when you print */
+        @media print {
+            .controls, .brand, .url-bar { display: none !important; }
+            body { padding: 0; }
+            #printable-content { border: none; padding: 0; }
+            h1 { color: black; }
+        }
     </style>
 </head>
 <body>
@@ -71,57 +72,36 @@
             <strong>AI Studio</strong>
         </div>
 
-        <h1>Interactive AI Assistant</h1>
+        <h1>AI Output Terminal</h1>
+        
+        <div id="printable-content">
+            <p><em>Click "Start Listening" to speak, then "Print" to save this text...</em></p>
+            <!-- AI or Voice text will appear here -->
+        </div>
         
         <div class="controls">
-            <div id="chat-output">Click the microphone and say something...</div>
-            
-            <div class="btn-group">
-                <button id="mic-btn">🎤 Start Listening</button>
-                <button id="speak-btn">🔊 Read Response</button>
-            </div>
+            <button onclick="startListening()">🎤 Start Listening</button>
+            <button onclick="window.print()">🖨️ Print Page</button>
         </div>
+    </div>
 
-        <script>
-            // Initialize Speech Recognition (Listening)
+    <script>
+        const content = document.getElementById('printable-content');
+
+        // Simple Voice Recognition
+        function startListening() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             const recognition = new SpeechRecognition();
-            const output = document.getElementById('chat-output');
-            const micBtn = document.getElementById('mic-btn');
-
-            recognition.onstart = () => {
-                micBtn.textContent = "🛑 Stop Listening";
-                micBtn.classList.add('mic-active');
-            };
 
             recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                output.innerText = "You said: " + transcript;
-                // Here is where you would normally send 'transcript' to your Gemini API
+                const text = event.results[0][0].transcript;
+                // We add the text to the printable area
+                content.innerHTML = `<h3>Voice Transcript</h3><p>${text}</p>`;
             };
-
-            recognition.onend = () => {
-                micBtn.textContent = "🎤 Start Listening";
-                micBtn.classList.remove('mic-active');
-            };
-
-            micBtn.addEventListener('click', () => {
-                recognition.start();
-            });
-
-            // Initialize Speech Synthesis (Talking)
-            document.getElementById('speak-btn').addEventListener('click', () => {
-                const text = output.innerText;
-                const utterance = new SpeechSynthesisUtterance(text);
-                
-                // Optional: Customize the voice
-                utterance.pitch = 1;
-                utterance.rate = 1;
-                
-                window.speechSynthesis.speak(utterance);
-            });
-        </script>
-    </div>
+            
+            recognition.start();
+        }
+    </script>
 
 </body>
 </html>
