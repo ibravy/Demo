@@ -3,163 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Academy | Gemini Style</title>
+    <title>AI Interface</title>
     <style>
         :root {
-            --primary-purple: #8e24aa;
-            --text-dark: #3c4043;
-            --text-light: #70757a;
-            --border-color: #dfe1e5;
-            --bg-color: #ffffff;
+            --gemini-purple: #8e24aa;
+            --google-gray: #3c4043;
+            --light-gray: #70757a;
+            --border: #dfe1e5;
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Google Sans', Roboto, Arial, sans-serif;
             margin: 0;
-            background-color: var(--bg-color);
-            color: var(--text-dark);
+            padding: 0;
+            background-color: #ffffff;
             display: flex;
-            min-height: 100vh;
+            justify-content: center;
+            color: var(--google-gray);
         }
 
-        /* Sidebar for Academy Navigation */
-        nav {
-            width: 260px;
-            border-right: 1px solid var(--border-color);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+        .container {
+            max-width: 850px;
+            width: 100%;
+            padding: 80px 20px;
         }
 
-        .logo {
-            font-weight: bold;
-            font-size: 1.2rem;
-            color: var(--primary-purple);
-            margin-bottom: 20px;
+        /* Top Branding */
+        .brand {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
         }
 
-        nav a {
-            text-decoration: none;
-            color: var(--text-dark);
-            font-size: 0.9rem;
-            padding: 8px 12px;
-            border-radius: 8px;
-            transition: background 0.3s;
+        .brand-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(45deg, #4285f4, #8e24aa);
+            border-radius: 50%;
         }
 
-        nav a:hover {
-            background-color: #f1f3f4;
-        }
-
-        /* Main Content Area */
-        main {
-            flex-grow: 1;
-            padding: 60px 40px;
-            max-width: 800px;
-        }
-
-        .breadcrumb {
+        /* Header Section */
+        .url-bar {
             font-size: 0.85rem;
-            color: var(--text-light);
-            margin-bottom: 5px;
-        }
-
-        .site-link {
-            font-size: 0.85rem;
-            color: var(--text-dark);
-            margin-bottom: 15px;
+            color: var(--light-gray);
+            margin-bottom: 8px;
         }
 
         h1 {
-            color: var(--primary-purple);
-            font-size: 1.8rem;
-            font-weight: 500;
-            margin: 0 0 15px 0;
+            color: var(--gemini-purple);
+            font-size: 2.2rem;
+            font-weight: 400;
+            margin: 0 0 20px 0;
         }
 
-        .description {
-            font-size: 1rem;
+        .hero-text {
+            font-size: 1.1rem;
             line-height: 1.6;
-            color: var(--text-dark);
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
 
         hr {
             border: 0;
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid var(--border);
             margin: 40px 0;
         }
 
-        /* Lesson Card Style */
-        .lesson-grid {
+        /* AI Module Cards */
+        .ai-grid {
             display: grid;
-            gap: 20px;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
         }
 
-        .lesson-card {
-            padding: 20px;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            transition: box-shadow 0.3s;
-            cursor: pointer;
+        .ai-card {
+            padding: 24px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
         }
 
-        .lesson-card:hover {
-            box-shadow: 0 1px 6px rgba(32,33,36,0.28);
+        .ai-card:hover {
+            background-color: #f8f9fa;
+            border-color: var(--gemini-purple);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
-        .tag {
+        .card-label {
             font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--gemini-purple);
             text-transform: uppercase;
-            font-weight: bold;
-            color: var(--primary-purple);
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .ai-card h3 {
+            margin: 0 0 10px 0;
+            font-weight: 500;
+        }
+
+        .ai-card p {
+            font-size: 0.9rem;
+            color: var(--light-gray);
+            margin: 0;
+        }
+
+        @media (max-width: 600px) {
+            .ai-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <nav>
-        <div class="logo">
-            <span>✨</span> AI Academy
+    <div class="container">
+        <div class="brand">
+            <div class="brand-icon"></div>
+            <strong>AI Studio</strong>
         </div>
-        <a href="#">Introduction to AI</a>
-        <a href="#">Python for Automation</a>
-        <a href="#">Crypto Spot Analysis</a>
-        <a href="#">Hardware & Motors</a>
-    </nav>
 
-    <main>
-        <div class="breadcrumb">Academy Hub > Courses</div>
-        <div class="site-link">https://academy.yoursite.com</div>
-
-        <h1>Welcome to the Academy</h1>
+        <div class="url-bar">https://ai.yoursite.com</div>
+        <h1>Meet Your AI Assistant</h1>
         
-        <p class="description">
-            Experience the power of generative learning. Dive into professional-grade modules 
-            covering <strong>Python development</strong>, <strong>Spot market technical analysis</strong>, 
-            and <strong>AI integration</strong>.
+        <p class="hero-text">
+            Get help with writing, planning, and brainstorming. Experience the power of 
+            generative AI models directly in your browser.
         </p>
 
         <hr>
 
-        <div class="lesson-grid">
-            <div class="lesson-card">
-                <div class="tag">Module 1</div>
-                <h3>Building with Gemini API</h3>
-                <p class="description">Learn how to connect your Python backend to advanced AI models.</p>
-            </div>
+        <div class="ai-grid">
+            <a href="#" class="ai-card">
+                <div class="card-label">Generative Text</div>
+                <h3>Chat Interface</h3>
+                <p>Natural language processing for complex problem solving.</p>
+            </a>
 
-            <div class="lesson-card">
-                <div class="tag">Module 2</div>
-                <h3>Technical Analysis Pro</h3>
-                <p class="description">Master the charts for SATS and KITE trading with spot-market precision.</p>
-            </div>
+            <a href="#" class="ai-card">
+                <div class="card-label">Developer Tools</div>
+                <h3>API Integration</h3>
+                <p>Connect your Python applications to state-of-the-art models.</p>
+            </a>
+
+            <a href="#" class="ai-card">
+                <div class="card-label">Vision</div>
+                <h3>Image Analysis</h3>
+                <p>Understand and describe visual data with AI vision models.</p>
+            </a>
+
+            <a href="#" class="ai-card">
+                <div class="card-label">Code</div>
+                <h3>Script Generation</h3>
+                <p>Automate your workflow with AI-powered code suggestions.</p>
+            </a>
         </div>
-    </main>
+    </div>
 
 </body>
 </html>
