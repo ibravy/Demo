@@ -4,70 +4,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Studio | Typing Mode</title>
+    <title>Gemini AI Studio</title>
     <style>
         :root {
             --gemini-purple: #8e24aa;
             --google-gray: #3c4043;
             --light-gray: #70757a;
             --border: #dfe1e5;
-            --bg-color: #f8f9fa;
+            --bg-input: #f0f4f9;
         }
 
         body {
-            font-family: 'Google Sans', Roboto, Arial, sans-serif;
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
             margin: 0;
-            background-color: #ffffff;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            background-color: #ffffff;
         }
 
         /* Top Header */
         .header {
             width: 100%;
-            max-width: 850px;
+            max-width: 900px;
             padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .brand { display: flex; align-items: center; gap: 10px; font-weight: bold; }
-        .brand-icon { width: 20px; height: 20px; background: linear-gradient(45deg, #4285f4, #8e24aa); border-radius: 50%; }
+        .brand { display: flex; align-items: center; gap: 10px; font-weight: 500; font-size: 1.2rem; }
+        .brand-icon { width: 22px; height: 22px; background: linear-gradient(45deg, #4285f4, #8e24aa); border-radius: 50%; }
 
-        /* Chat Display Area */
+        /* Chat Window */
         #chat-window {
             flex: 1;
             width: 100%;
-            max-width: 800px;
-            padding: 40px 20px;
+            max-width: 750px;
+            padding: 20px;
             overflow-y: auto;
-            margin-bottom: 100px; /* Space for input bar */
+            margin-bottom: 120px;
         }
 
-        .message {
-            margin-bottom: 25px;
-            line-height: 1.6;
-        }
+        .message { margin-bottom: 30px; line-height: 1.6; font-size: 1rem; }
+        .user-label { font-weight: 600; color: var(--google-gray); margin-bottom: 4px; }
+        .ai-label { font-weight: 600; color: var(--gemini-purple); margin-bottom: 4px; }
 
-        .user-label { color: var(--google-gray); font-weight: bold; margin-bottom: 5px; }
-        .ai-label { color: var(--gemini-purple); font-weight: bold; margin-bottom: 5px; }
-
-        /* Floating Input Bar */
-        .input-container {
+        /* Input Bar */
+        .input-area {
             position: fixed;
             bottom: 30px;
             width: 90%;
             max-width: 700px;
-            background: var(--bg-color);
-            border: 1px solid var(--border);
-            border-radius: 28px;
-            padding: 10px 20px;
+            background: var(--bg-input);
+            border-radius: 32px;
+            padding: 8px 20px;
             display: flex;
             align-items: center;
-            box-shadow: 0 1px 6px rgba(32,33,36,0.1);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         }
 
         input {
@@ -75,28 +70,18 @@
             border: none;
             background: transparent;
             outline: none;
-            padding: 10px;
+            padding: 12px;
             font-size: 1rem;
         }
 
-        .action-btns { display: flex; gap: 10px; }
-        
-        .icon-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 1.2rem;
-            color: var(--light-gray);
-            transition: 0.2s;
-        }
+        .btn-group { display: flex; gap: 15px; padding-left: 10px; }
+        .action-btn { background: none; border: none; cursor: pointer; font-size: 1.3rem; color: var(--light-gray); transition: 0.2s; }
+        .action-btn:hover { color: var(--gemini-purple); }
 
-        .icon-btn:hover { color: var(--gemini-purple); }
-
-        /* PRINT STYLES */
+        /* Print formatting */
         @media print {
-            .input-container, .header, .icon-btn { display: none !important; }
-            #chat-window { margin: 0; padding: 0; }
-            body { background: white; }
+            .input-area, .header, .action-btn { display: none !important; }
+            #chat-window { margin: 0; }
         }
     </style>
 </head>
@@ -105,56 +90,73 @@
     <div class="header">
         <div class="brand">
             <div class="brand-icon"></div>
-            <span>AI Studio</span>
+            <span>Gemini Studio</span>
         </div>
-        <button class="icon-btn" onclick="window.print()" title="Print Conversation">🖨️</button>
+        <button class="action-btn" onclick="window.print()" title="Print this chat">🖨️</button>
     </div>
 
     <div id="chat-window">
         <div class="message">
-            <div class="ai-label">AI Studio</div>
-            <div id="ai-response">Hello! Type something below to begin, and click the printer icon above to print our conversation.</div>
+            <div class="ai-label">Gemini</div>
+            <div>Hello! I am your AI assistant. Type a question below to get started.</div>
         </div>
     </div>
 
-    <div class="input-container">
-        <input type="text" id="user-input" placeholder="Enter a prompt here..." onkeypress="handleEnter(event)">
-        <div class="action-btns">
-            <button class="icon-btn" onclick="processInput()">➤</button>
+    <div class="input-area">
+        <input type="text" id="user-input" placeholder="Ask Gemini..." onkeypress="if(event.key==='Enter') askAI()">
+        <div class="btn-group">
+            <button class="action-btn" onclick="askAI()">➤</button>
         </div>
     </div>
 
     <script>
-        const chatWindow = document.getElementById('chat-window');
-        const userInput = document.getElementById('user-input');
+        // REPLACE THIS WITH YOUR KEY FROM https://aistudio.google.com/
+        const API_KEY = "AIzaSyCjIr6LVMXEcQO_PWRkBnFtTLLBIXAhqwg"; 
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
-        function handleEnter(e) {
-            if (e.key === 'Enter') processInput();
+        async function askAI() {
+            const inputField = document.getElementById('user-input');
+            const chatWindow = document.getElementById('chat-window');
+            const prompt = inputField.value.trim();
+
+            if (!prompt) return;
+
+            // 1. Add User Message to screen
+            addMessage("You", prompt, 'user-label');
+            inputField.value = "";
+
+            // 2. Prepare Loading Message
+            const loadingDiv = addMessage("Gemini", "Thinking...", 'ai-label');
+
+            try {
+                // 3. Fetch Answer from Gemini API
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }]
+                    })
+                });
+
+                const data = await response.json();
+                const aiText = data.candidates[0].content.parts[0].text;
+
+                // 4. Update the message with the real answer
+                loadingDiv.innerHTML = `<div class="ai-label">Gemini</div><div>${aiText.replace(/\n/g, '<br>')}</div>`;
+            } catch (error) {
+                loadingDiv.innerHTML = `<div class="ai-label">Gemini</div><div style="color:red;">Error: Make sure your API key is correct.</div>`;
+            }
+
+            chatWindow.scrollTop = chatWindow.scrollHeight;
         }
 
-        function processInput() {
-            const text = userInput.value.trim();
-            if (text === "") return;
-
-            // 1. Add User Message
-            const userDiv = document.createElement('div');
-            userDiv.className = 'message';
-            userDiv.innerHTML = `<div class="user-label">You</div><div>${text}</div>`;
-            chatWindow.appendChild(userDiv);
-
-            // 2. Clear Input
-            userInput.value = "";
-
-            // 3. Simulate AI Response (You can connect your Python API here)
-            setTimeout(() => {
-                const aiDiv = document.createElement('div');
-                aiDiv.className = 'message';
-                aiDiv.innerHTML = `<div class="ai-label">AI Studio</div><div>I have received your message: "${text}". How can I help you further?</div>`;
-                chatWindow.appendChild(aiDiv);
-                
-                // Auto-scroll to bottom
-                chatWindow.scrollTop = chatWindow.scrollHeight;
-            }, 600);
+        function addMessage(sender, text, labelClass) {
+            const chatWindow = document.getElementById('chat-window');
+            const div = document.createElement('div');
+            div.className = 'message';
+            div.innerHTML = `<div class="${labelClass}">${sender}</div><div>${text}</div>`;
+            chatWindow.appendChild(div);
+            return div;
         }
     </script>
 
