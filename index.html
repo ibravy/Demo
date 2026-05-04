@@ -3,96 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neural Engine | Ahmet AI</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>AI Academy | Gemini Style</title>
     <style>
-        body { background: #020202; color: #f1f5f9; font-family: 'Inter', sans-serif; }
-        .glow-box { border: 1px solid #3b82f6; box-shadow: 0 0 25px rgba(59, 130, 246, 0.3); }
-        .chat-scroll::-webkit-scrollbar { width: 4px; }
-        .chat-scroll::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
+        :root {
+            --primary-purple: #8e24aa;
+            --text-dark: #3c4043;
+            --text-light: #70757a;
+            --border-color: #dfe1e5;
+            --bg-color: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar for Academy Navigation */
+        nav {
+            width: 260px;
+            border-right: 1px solid var(--border-color);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--primary-purple);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        nav a:hover {
+            background-color: #f1f3f4;
+        }
+
+        /* Main Content Area */
+        main {
+            flex-grow: 1;
+            padding: 60px 40px;
+            max-width: 800px;
+        }
+
+        .breadcrumb {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        .site-link {
+            font-size: 0.85rem;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            color: var(--primary-purple);
+            font-size: 1.8rem;
+            font-weight: 500;
+            margin: 0 0 15px 0;
+        }
+
+        .description {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-dark);
+            margin-bottom: 30px;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid var(--border-color);
+            margin: 40px 0;
+        }
+
+        /* Lesson Card Style */
+        .lesson-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .lesson-card {
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            transition: box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .lesson-card:hover {
+            box-shadow: 0 1px 6px rgba(32,33,36,0.28);
+        }
+
+        .tag {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            color: var(--primary-purple);
+        }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-4">
+<body>
 
-    <div class="glow-box bg-gray-900/90 p-6 rounded-3xl w-full max-w-2xl mb-4 text-center">
-        <h1 class="text-4xl font-black text-blue-500 italic tracking-tighter uppercase">Neural Engine</h1>
-        <p id="status" class="text-[10px] text-blue-400 font-mono tracking-widest uppercase mt-1">● Hybrid JS Logic Active</p>
-    </div>
+    <nav>
+        <div class="logo">
+            <span>✨</span> AI Academy
+        </div>
+        <a href="#">Introduction to AI</a>
+        <a href="#">Python for Automation</a>
+        <a href="#">Crypto Spot Analysis</a>
+        <a href="#">Hardware & Motors</a>
+    </nav>
 
-    <div class="w-full max-w-2xl bg-gray-900 rounded-3xl border border-gray-800 shadow-2xl flex flex-col h-[550px] overflow-hidden">
-        <div id="chat-window" class="flex-1 p-6 overflow-y-auto space-y-4 text-sm chat-scroll">
-            <div class="bg-blue-600/10 border border-blue-500/20 p-4 rounded-2xl rounded-tl-none text-blue-100">
-                System initialized. I am using JS-Logic to process your requests. No API key needed.
+    <main>
+        <div class="breadcrumb">Academy Hub > Courses</div>
+        <div class="site-link">https://academy.yoursite.com</div>
+
+        <h1>Welcome to the Academy</h1>
+        
+        <p class="description">
+            Experience the power of generative learning. Dive into professional-grade modules 
+            covering <strong>Python development</strong>, <strong>Spot market technical analysis</strong>, 
+            and <strong>AI integration</strong>.
+        </p>
+
+        <hr>
+
+        <div class="lesson-grid">
+            <div class="lesson-card">
+                <div class="tag">Module 1</div>
+                <h3>Building with Gemini API</h3>
+                <p class="description">Learn how to connect your Python backend to advanced AI models.</p>
+            </div>
+
+            <div class="lesson-card">
+                <div class="tag">Module 2</div>
+                <h3>Technical Analysis Pro</h3>
+                <p class="description">Master the charts for SATS and KITE trading with spot-market precision.</p>
             </div>
         </div>
+    </main>
 
-        <div class="p-4 bg-black/50 border-t border-gray-800 flex gap-2">
-            <input id="user-input" type="text" placeholder="Talk to the engine..." 
-                   class="flex-1 bg-gray-800 border border-gray-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500 text-white">
-            <button onclick="runAI()" class="bg-blue-600 hover:bg-blue-500 px-8 py-4 rounded-2xl font-bold transition-all active:scale-95 shadow-lg">
-                SEND
-            </button>
-        </div>
-    </div>
-
-    <script>
-        async function runAI() {
-            const input = document.getElementById('user-input');
-            const chat = document.getElementById('chat-window');
-            const prompt = input.value.trim();
-            if (!prompt) return;
-
-            // Update UI with User Message
-            chat.innerHTML += `<div class="flex justify-end"><div class="bg-blue-600 p-3 rounded-2xl rounded-tr-none max-w-[85%] shadow-lg">${prompt}</div></div>`;
-            input.value = "";
-            chat.scrollTop = chat.scrollHeight;
-
-            // AI Processing UI
-            const tId = "ai-" + Date.now();
-            chat.innerHTML += `<div id="${tId}" class="flex justify-start"><div class="bg-gray-800 p-3 rounded-2xl rounded-tl-none border border-gray-700 text-gray-400 italic animate-pulse">Processing Logic...</div></div>`;
-            chat.scrollTop = chat.scrollHeight;
-
-            let finalResponse = "";
-
-            try {
-                // Logic Step 1: Try Cloud Brain (Free Public API)
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 3000); // Wait 3 seconds max
-
-                const response = await fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(prompt)}&format=json&no_html=1`, { signal: controller.signal });
-                const data = await response.json();
-                finalResponse = data.AbstractText;
-            } catch (err) {
-                console.log("Cloud server slow, switching to Local Logic...");
-            }
-
-            // Logic Step 2: Fallback to Neural Logic (If Step 1 fails or is empty)
-            if (!finalResponse) {
-                finalResponse = getNeuralLogic(prompt);
-            }
-
-            // Update UI with AI Message
-            document.getElementById(tId).innerHTML = `<div class="bg-blue-600/10 border border-blue-500/20 p-4 rounded-2xl rounded-tl-none text-blue-100 max-w-[85%] shadow-xl">${finalResponse}</div>`;
-            chat.scrollTop = chat.scrollHeight;
-        }
-
-        // Dedicated JS Logic for your projects
-        function getNeuralLogic(q) {
-            const low = q.toLowerCase();
-            if (low.includes("python") || low.includes("code")) {
-                return "Python Logic: For your mobile-first projects, I recommend using 'customtkinter' for modern GUIs. I can help generate logic for your Binance API bots.";
-            }
-            if (low.includes("btc") || low.includes("crypto") || low.includes("binance") || low.includes("sats")) {
-                return "Trading Analysis: BTC and SOL are highly volatile. Monitor the RSI levels on the 15m Binance chart and watch the 1000SATS support zones.";
-            }
-            if (low.includes("youtube") || low.includes("shorts") || low.includes("cat")) {
-                return "Content Strategy: Your cat shorts need a high-retention hook in the first 1.5 seconds. Posting 3 times daily will help you reach your 100-sub goal fast.";
-            }
-            return "Query Processed. My neural logic is ready for your specific technical request. What coding or trading parameters do we need to set?";
-        }
-
-        // Support for On-Screen Keyboard
-        document.getElementById("user-input").addEventListener("keypress", (e) => { if (e.key === "Enter") runAI(); });
-    </script>
 </body>
 </html>
