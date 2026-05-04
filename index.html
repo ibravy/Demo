@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gemini AI Studio</title>
+    <title>AI Studio | Gemini Style</title>
     <style>
         :root {
             --gemini-purple: #8e24aa;
@@ -24,7 +23,7 @@
             background-color: #ffffff;
         }
 
-        /* Top Header */
+        /* Header */
         .header {
             width: 100%;
             max-width: 900px;
@@ -37,7 +36,7 @@
         .brand { display: flex; align-items: center; gap: 10px; font-weight: 500; font-size: 1.2rem; }
         .brand-icon { width: 22px; height: 22px; background: linear-gradient(45deg, #4285f4, #8e24aa); border-radius: 50%; }
 
-        /* Chat Window */
+        /* Chat Display */
         #chat-window {
             flex: 1;
             width: 100%;
@@ -51,7 +50,7 @@
         .user-label { font-weight: 600; color: var(--google-gray); margin-bottom: 4px; }
         .ai-label { font-weight: 600; color: var(--gemini-purple); margin-bottom: 4px; }
 
-        /* Input Bar */
+        /* Input Bar (Gemini Style) */
         .input-area {
             position: fixed;
             bottom: 30px;
@@ -78,10 +77,10 @@
         .action-btn { background: none; border: none; cursor: pointer; font-size: 1.3rem; color: var(--light-gray); transition: 0.2s; }
         .action-btn:hover { color: var(--gemini-purple); }
 
-        /* Print formatting */
+        /* Print Settings */
         @media print {
             .input-area, .header, .action-btn { display: none !important; }
-            #chat-window { margin: 0; }
+            #chat-window { margin: 0; padding: 0; }
         }
     </style>
 </head>
@@ -90,31 +89,29 @@
     <div class="header">
         <div class="brand">
             <div class="brand-icon"></div>
-            <span>Gemini Studio</span>
+            <span>AI Studio</span>
         </div>
-        <button class="action-btn" onclick="window.print()" title="Print this chat">🖨️</button>
+        <button class="action-btn" onclick="window.print()" title="Print Chat">🖨️</button>
     </div>
 
     <div id="chat-window">
         <div class="message">
-            <div class="ai-label">Gemini</div>
-            <div>Hello! I am your AI assistant. Type a question below to get started.</div>
+            <div class="ai-label">AI Studio</div>
+            <div>Hello! I am an AI assistant. Type below and I'll give you an answer.</div>
         </div>
     </div>
 
     <div class="input-area">
-        <input type="text" id="user-input" placeholder="Ask Gemini..." onkeypress="if(event.key==='Enter') askAI()">
+        <input type="text" id="user-input" placeholder="Ask anything..." onkeypress="if(event.key==='Enter') askAI()">
         <div class="btn-group">
             <button class="action-btn" onclick="askAI()">➤</button>
         </div>
     </div>
 
     <script>
-        // REPLACE THIS WITH YOUR KEY FROM https://aistudio.google.com/
-        const API_KEY = "AIzaSyCjIr6LVMXEcQO_PWRkBnFtTLLBIXAhqwg"; 
-      // Try changing your URL to this one:
-const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-
+        // Get a FREE token from https://huggingface.co/settings/tokens
+        const API_TOKEN = "hf_YOUR_TOKEN_HERE"; 
+        
         async function askAI() {
             const inputField = document.getElementById('user-input');
             const chatWindow = document.getElementById('chat-window');
@@ -122,30 +119,33 @@ const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-
 
             if (!prompt) return;
 
-            // 1. Add User Message to screen
+            // 1. Add User Message
             addMessage("You", prompt, 'user-label');
             inputField.value = "";
 
-            // 2. Prepare Loading Message
-            const loadingDiv = addMessage("Gemini", "Thinking...", 'ai-label');
+            // 2. Add Loading State
+            const loadingDiv = addMessage("AI Studio", "Processing...", 'ai-label');
 
             try {
-                // 3. Fetch Answer from Gemini API
-                const response = await fetch(API_URL, {
+                // 3. Call Hugging Face Inference API
+                const response = await fetch("https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2", {
+                    headers: { Authorization: `Bearer ${API_TOKEN}` },
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: prompt }] }]
-                    })
+                    body: JSON.stringify({ inputs: prompt }),
                 });
 
-                const data = await response.json();
-                const aiText = data.candidates[0].content.parts[0].text;
+                const result = await response.json();
+                
+                // 4. Update with actual answer
+                // Mistral returns an array with generated_text
+                let aiText = result[0].generated_text || "I couldn't generate a response.";
+                
+                // Clean up: Remove the prompt from the response if the model includes it
+                aiText = aiText.replace(prompt, "").trim();
 
-                // 4. Update the message with the real answer
-                loadingDiv.innerHTML = `<div class="ai-label">Gemini</div><div>${aiText.replace(/\n/g, '<br>')}</div>`;
+                loadingDiv.innerHTML = `<div class="ai-label">AI Studio</div><div>${aiText.replace(/\n/g, '<br>')}</div>`;
             } catch (error) {
-                loadingDiv.innerHTML = `<div class="ai-label">Gemini</div><div style="color:red;">Error: Make sure your API key is correct.</div>`;
+                loadingDiv.innerHTML = `<div class="ai-label">AI Studio</div><div style="color:red;">Error connecting to the AI model.</div>`;
             }
 
             chatWindow.scrollTop = chatWindow.scrollHeight;
