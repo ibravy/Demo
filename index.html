@@ -3,191 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Problem Solver AI</title>
+    <title>NetShield | Internet Trust Verifier</title>
     <style>
-        /* CSS STYLING */
+        :root {
+            --primary: #00ff88;
+            --bg: #0a0a0c;
+            --card: #16161e;
+            --text: #e1e1e6;
+        }
+
         body {
-            background-color: #0f172a;
-            color: #f1f5f9;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
         }
 
-        .container {
-            background: #1e293b;
-            padding: 2.5rem;
-            border-radius: 16px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        .shield-container {
+            background: var(--card);
+            border: 1px solid #2d2d3a;
+            border-radius: 24px;
+            padding: 40px;
             width: 90%;
-            max-width: 650px;
+            max-width: 500px;
             text-align: center;
-            border: 1px solid #334155;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
 
-        h1 { margin-top: 0; color: #3b82f6; }
-
-        .badge {
-            font-size: 0.4em;
-            background: #3b82f6;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 20px;
-            vertical-align: middle;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .status-light {
+            width: 12px;
+            height: 12px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            box-shadow: 0 0 10px var(--primary);
         }
 
-        textarea {
-            width: 100%;
-            height: 150px;
-            background: #0f172a;
-            border: 1px solid #3b82f6;
-            color: #e2e8f0;
+        h1 { font-size: 2rem; margin-bottom: 10px; letter-spacing: -1px; }
+        
+        .input-box {
+            background: #0c0c10;
+            border: 1px solid #333;
+            border-radius: 12px;
             padding: 15px;
-            border-radius: 10px;
-            resize: none;
+            width: 100%;
+            color: white;
+            margin: 20px 0;
             font-size: 1rem;
             box-sizing: border-box;
-            margin: 20px 0;
-            outline: none;
         }
 
-        textarea:focus {
-            box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
-        }
-
-        button {
-            background: #3b82f6;
-            color: white;
+        .btn-scan {
+            background: var(--primary);
+            color: #000;
             border: none;
-            padding: 14px 28px;
-            border-radius: 8px;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-weight: 800;
             cursor: pointer;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: all 0.2s ease;
             width: 100%;
+            transition: 0.3s;
         }
 
-        button:hover {
-            background: #2563eb;
-            transform: translateY(-1px);
+        .btn-scan:hover {
+            transform: scale(1.02);
+            filter: brightness(1.1);
         }
 
-        .hidden { display: none; }
-
-        #solutionArea {
-            text-align: left;
-            background: #0f172a;
+        #result {
+            margin-top: 25px;
             padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            border-left: 4px solid #3b82f6;
+            border-radius: 12px;
+            display: none;
+            text-align: left;
+            animation: fadeIn 0.5s ease;
         }
 
-        .reset-btn {
-            background: transparent;
-            border: 1px solid #475569;
-            margin-top: 15px;
-        }
+        .danger { border: 2px solid #ff4444; background: rgba(255, 68, 68, 0.1); }
+        .safe { border: 2px solid #00ff88; background: rgba(0, 255, 136, 0.1); }
 
-        .reset-btn:hover {
-            background: #334155;
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-left-color: #3b82f6;
+        .loader {
+            display: none;
+            border: 3px solid #333;
+            border-top: 3px solid var(--primary);
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 24px;
+            height: 24px;
             animation: spin 1s linear infinite;
             margin: 20px auto;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Problem Solver <span class="badge">Engine</span></h1>
-        <p>Input your technical challenge for a structured solution path.</p>
-        
-        <div id="inputSection">
-            <textarea id="problemInput" placeholder="e.g., My Python script is returning a 'NoneType' error when fetching API data..."></textarea>
-            <button onclick="solve()">Analyze & Solve</button>
-        </div>
-
-        <div id="loader" class="hidden">
-            <div class="spinner"></div>
-            <p>Running diagnostics...</p>
-        </div>
-
-        <div id="solutionArea" class="hidden">
-            <h3 style="color: #60a5fa; margin-top: 0;">Diagnostic Result:</h3>
-            <div id="resultText"></div>
-            <button onclick="reset()" class="reset-btn">New Analysis</button>
-        </div>
+<div class="shield-container">
+    <div style="font-size: 0.8rem; color: #888; margin-bottom: 20px;">
+        <span class="status-light"></span> NETWORK SECURE
     </div>
+    <h1>NetShield AI</h1>
+    <p style="color: #888;">Paste a link or message to verify its safety.</p>
 
-    <script>
-        /* JAVASCRIPT LOGIC */
-        function solve() {
-            const input = document.getElementById('problemInput').value.trim();
-            
-            if (input.length < 5) {
-                alert("Please describe the problem in more detail.");
-                return;
-            }
+    <input type="text" id="userInput" class="input-box" placeholder="https://... or 'You won a prize!'" />
+    <button class="btn-scan" onclick="startScan()">RUN DEEP SCAN</button>
 
-            document.getElementById('inputSection').classList.add('hidden');
-            document.getElementById('loader').classList.remove('hidden');
+    <div id="loader" class="loader"></div>
 
-            // Simulate "thinking" time
-            setTimeout(() => {
-                document.getElementById('loader').classList.add('hidden');
-                document.getElementById('solutionArea').classList.remove('hidden');
-                
-                const resultText = document.getElementById('resultText');
-                resultText.innerHTML = generateLogic(input);
-            }, 1800);
+    <div id="result">
+        <h4 id="resTitle"></h4>
+        <p id="resDesc" style="font-size: 0.9rem;"></p>
+    </div>
+</div>
+
+<script>
+    function startScan() {
+        const input = document.getElementById('userInput').value;
+        if(!input) return;
+
+        const res = document.getElementById('result');
+        const loader = document.getElementById('loader');
+        
+        res.style.display = 'none';
+        loader.style.display = 'block';
+
+        // Simulate AI analysis delay
+        setTimeout(() => {
+            loader.style.display = 'none';
+            res.style.display = 'block';
+            analyze(input);
+        }, 1500);
+    }
+
+    function analyze(val) {
+        const res = document.getElementById('result');
+        const title = document.getElementById('resTitle');
+        const desc = document.getElementById('resDesc');
+        const low = val.toLowerCase();
+
+        // SIMULATED THREAT DETECTION LOGIC
+        if (low.includes('http') && !low.includes('s')) {
+            res.className = 'danger';
+            title.innerText = "🚨 CRITICAL VULNERABILITY";
+            desc.innerText = "Non-encrypted (HTTP) link detected. High risk of data interception.";
+        } else if (low.includes('win') || low.includes('prize') || low.includes('gift')) {
+            res.className = 'danger';
+            title.innerText = "⚠️ SOCIAL ENGINEERING DETECTED";
+            desc.innerText = "Content matches common phishing patterns designed to steal credentials.";
+        } else {
+            res.className = 'safe';
+            title.innerText = "✅ SOURCE VERIFIED";
+            desc.innerText = "No immediate AI-fraud signatures detected. Proceed with standard caution.";
         }
+    }
+</script>
 
-        function generateLogic(text) {
-            const query = text.toLowerCase();
-            
-            // Logic keywords for specific categories
-            if (query.includes("code") || query.includes("error") || query.includes("script")) {
-                return `
-                    <p><strong>Initial Check:</strong> Verify syntax and indentation in your environment.</p>
-                    <p><strong>Path A:</strong> Wrap the suspected block in a try/except block to catch the specific exception.</p>
-                    <p><strong>Path B:</strong> Print the variables immediately before the error line to ensure they aren't 'null' or 'undefined'.</p>
-                `;
-            } else if (query.includes("slow") || query.includes("performance")) {
-                return `
-                    <p><strong>Bottleneck Found:</strong> Resource allocation seems suboptimal.</p>
-                    <p><strong>Fix:</strong> Check for memory leaks or unclosed loops. Ensure hardware acceleration is enabled if applicable.</p>
-                `;
-            } else {
-                return `
-                    <p><strong>General Analysis:</strong> The problem is complex but solvable.</p>
-                    <p><strong>Recommendation:</strong> Isolate the core variable. Test the system in segments to find where the logic breaks down. Documentation review is advised.</p>
-                `;
-            }
-        }
-
-        function reset() {
-            document.getElementById('problemInput').value = "";
-            document.getElementById('solutionArea').classList.add('hidden');
-            document.getElementById('inputSection').classList.remove('hidden');
-        }
-    </script>
 </body>
 </html>
