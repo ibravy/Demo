@@ -2,91 +2,42 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus | Auto-Redirect</title>
-    <style>
-        body {
-            margin: 0;
-            background: #000;
-            color: #00f2ff;
-            font-family: 'Segoe UI', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-            text-align: center;
-        }
-
-        /* High-end loading animation */
-        .portal-ring {
-            width: 80px;
-            height: 80px;
-            border: 2px solid transparent;
-            border-top: 2px solid #00f2ff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); border-top-color: #00f2ff; }
-            50% { border-top-color: #7000ff; }
-            100% { transform: rotate(360deg); border-top-color: #00f2ff; }
-        }
-
-        .container {
-            animation: fadeIn 1s ease-in;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        h1 {
-            font-weight: 300;
-            letter-spacing: 5px;
-            font-size: 1rem;
-            text-transform: uppercase;
-        }
-
-        .status {
-            font-size: 0.7rem;
-            color: #444;
-            margin-top: 10px;
-            letter-spacing: 2px;
-        }
-    </style>
+    <title>AI Hub | GitHub Edition</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <div class="container">
-        <div class="portal-ring"></div>
-        <h1>Initializing Warp</h1>
-        <div class="status" id="status">Connecting to random node...</div>
+    <div class="chat-container">
+        <header>
+            <h1>AI Chat <span class="badge">No-API-Key</span></h1>
+        </header>
+        <div id="chat-window"></div>
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="Type a message...">
+            <button onclick="askAI()">Send</button>
+        </div>
     </div>
 
-    <script>
-        // The list of "Gateway" sites that provide millions of random links
-        const gateways = [
-            "https://theuselessweb.com/",
-            "https://random-ize.com/random-website/",
-            "https://discuvver.com/",
-            "https://www.randomwebsite.com/"
-        ];
+    <!-- This loads the AI logic -->
+    <script type="module">
+        import { HfInference } from 'https://cdn.jsdelivr.net/npm/@huggingface/inference@2.6.4/+esm';
+        
+        // Use a tiny model that is fast and free
+        const hf = new HfInference("hf_xxxxxxxxxxxxxxxxx"); // Your Free Token
 
-        // The Auto-Redirect Logic
-        window.onload = function() {
-            const status = document.getElementById('status');
-            
-            // Wait 2 seconds so the user sees your cool "Nexus" UI
-            setTimeout(() => {
-                status.innerText = "JUMPING...";
-                
-                // Pick a random gateway
-                const target = gateways[Math.floor(Math.random() * gateways.length)];
-                
-                // Direct redirect
-                window.location.replace(target);
-            }, 2000);
+        window.askAI = async () => {
+            const input = document.getElementById('userInput');
+            const window = document.getElementById('chat-window');
+            const text = input.value;
+
+            window.innerHTML += `<div class="user-msg">${text}</div>`;
+            input.value = '';
+
+            const response = await hf.textGeneration({
+                model: 'gpt2', // Or 'mistralai/Mistral-7B-v0.1'
+                inputs: text,
+            });
+
+            window.innerHTML += `<div class="ai-msg">${response.generated_text}</div>`;
         };
     </script>
 </body>
