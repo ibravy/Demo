@@ -3,100 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI NEXUS | ULTIMATE FIX</title>
+    <title>AI NEXUS | G4F EDITION</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #0b0f1a; --card: #161e2e; --accent: #0ea5e9; --text: #e2e8f0; }
+        :root { --bg: #090e1a; --card: #151c2c; --accent: #0ea5e9; --text: #f1f5f9; }
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .container { width: 95%; max-width: 700px; height: 80vh; background: var(--card); border-radius: 16px; display: flex; flex-direction: column; border: 1px solid #1e293b; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
-        .header { padding: 15px 20px; background: #1e293b; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; border-radius: 16px 16px 0 0; }
-        #chat { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
-        .msg { max-width: 80%; padding: 10px 15px; border-radius: 12px; font-size: 0.9rem; line-height: 1.4; }
-        .user { align-self: flex-end; background: var(--accent); color: white; }
-        .ai { align-self: flex-start; background: #334155; }
-        .controls { padding: 15px; background: #0b0f1a; display: flex; flex-direction: column; gap: 10px; border-radius: 0 0 16px 16px; }
-        .input-row { display: flex; gap: 8px; }
-        input { flex: 1; background: #1e293b; border: 1px solid #334155; padding: 12px; border-radius: 8px; color: white; outline: none; }
-        button { background: var(--accent); color: white; border: none; padding: 0 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        button:disabled { background: #475569; }
-        #progress-container { height: 4px; background: #334155; border-radius: 2px; overflow: hidden; display: none; }
-        #progress-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
-        #status-label { font-size: 0.7rem; color: var(--accent); }
+        .container { width: 95%; max-width: 750px; height: 85vh; background: var(--card); border-radius: 16px; display: flex; flex-direction: column; border: 1px solid #1e293b; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
+        .header { padding: 18px 25px; background: rgba(30, 41, 59, 0.5); border-bottom: 1px solid #334155; display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 1.1rem; }
+        .dot { width: 10px; height: 10px; background: #10b981; border-radius: 50%; box-shadow: 0 0 10px #10b981; }
+        #chat-window { flex: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 15px; }
+        .msg { max-width: 80%; padding: 12px 16px; border-radius: 14px; line-height: 1.5; font-size: 0.95rem; word-wrap: break-word; }
+        .user { align-self: flex-end; background: var(--accent); color: white; border-bottom-right-radius: 2px; }
+        .ai { align-self: flex-start; background: #2d3748; color: #cbd5e0; border-bottom-left-radius: 2px; }
+        .input-area { padding: 20px; background: #090e1a; display: flex; gap: 12px; border-radius: 0 0 16px 16px; }
+        input { flex: 1; background: #1a202c; border: 1px solid #2d3748; padding: 14px; border-radius: 10px; color: white; outline: none; }
+        input:focus { border-color: var(--accent); }
+        button { background: var(--accent); color: white; border: none; padding: 0 25px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        button:hover { opacity: 0.9; }
+        #typing { font-size: 0.8rem; color: #718096; padding-left: 25px; display: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">
-        <span>AI NEXUS V2 (Ultra-Light)</span>
-        <span id="status-label">Initializing...</span>
+    <div class="header"><div class="dot"></div> G4F AI HUB</div>
+    <div id="chat-window">
+        <div class="msg ai">Hello! I am connected via G4F. Ask me anything for free.</div>
     </div>
-    <div id="chat">
-        <div class="msg ai">Direct connection established. Click "SEND" to begin the one-time download (fast).</div>
-    </div>
-    <div class="controls">
-        <div id="progress-container"><div id="progress-bar"></div></div>
-        <div class="input-row">
-            <input type="text" id="userInput" placeholder="Ask your AI..." autocomplete="off">
-            <button id="btn">SEND</button>
-        </div>
+    <div id="typing">AI is generating...</div>
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="Ask g4f..." autocomplete="off">
+        <button id="sendBtn">SEND</button>
     </div>
 </div>
 
 <script type="module">
-    import * as webllm from "https://esm.run/@mlc-ai/web-llm";
+    import Client from 'https://g4f.dev/dist/js/client.js';
 
-    const chatBox = document.getElementById('chat');
-    const status = document.getElementById('status-label');
+    const chatWindow = document.getElementById('chat-window');
     const input = document.getElementById('userInput');
-    const btn = document.getElementById('btn');
-    const pBar = document.getElementById('progress-bar');
-    const pContainer = document.getElementById('progress-container');
+    const btn = document.getElementById('sendBtn');
+    const typing = document.getElementById('typing');
 
-    // Super-Light model (Perfect for 8GB RAM and slow internet)
-    const modelId = "Qwen2.5-0.5B-Instruct-q4f16_1-MLC";
-    let engine;
+    const client = new Client();
 
-    async function startAI() {
+    async function handleChat() {
         const text = input.value.trim();
         if (!text) return;
 
+        // User message
         appendMsg(text, 'user');
         input.value = '';
-        btn.disabled = true;
-        pContainer.style.display = 'block';
+        typing.style.display = 'block';
 
-        const aiBubble = appendMsg("Thinking...", 'ai');
+        // Placeholder for AI
+        const aiBubble = appendMsg("...", 'ai');
 
         try {
-            if (!engine) {
-                status.innerText = "Connecting to AI Node...";
-                engine = new webllm.MLCEngine();
-                engine.setInitProgressCallback((report) => {
-                    status.innerText = report.text;
-                    const progress = Math.round(report.progress * 100);
-                    pBar.style.width = progress + "%";
-                });
-                await engine.reload(modelId);
-            }
+            // Using G4F to get GPT-4 level response for free
+            const result = await client.chat.completions.create({
+                model: 'gpt-4o', // You can try 'gpt-4', 'gemini', or 'llama-3'
+                messages: [{ role: 'user', content: text }]
+            });
 
-            status.innerText = "System Online";
-            pContainer.style.display = 'none';
-
-            const messages = [{ role: "user", content: text }];
-            const chunks = await engine.chat.completions.create({ messages, stream: true });
-            
-            let reply = "";
-            for await (const chunk of chunks) {
-                reply += chunk.choices[0]?.delta?.content || "";
-                aiBubble.innerText = reply;
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }
-        } catch (e) {
-            aiBubble.innerText = "Error: Browser blocked WebGPU. Enable 'Hardware Acceleration' in settings.";
-            console.error(e);
+            const responseText = result.choices[0].message.content;
+            aiBubble.innerText = responseText;
+        } catch (error) {
+            aiBubble.innerText = "Error: Provider unavailable. Try again in a moment.";
+            console.error(error);
         } finally {
-            btn.disabled = false;
+            typing.style.display = 'none';
+            chatWindow.scrollTop = chatWindow.scrollHeight;
         }
     }
 
@@ -104,13 +81,13 @@
         const div = document.createElement('div');
         div.className = `msg ${type}`;
         div.innerText = text;
-        chatBox.appendChild(div);
-        chatBox.scrollTop = chatBox.scrollHeight;
+        chatWindow.appendChild(div);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
         return div;
     }
 
-    btn.onclick = startAI;
-    input.onkeypress = (e) => { if(e.key === 'Enter') startAI(); };
+    btn.onclick = handleChat;
+    input.onkeypress = (e) => { if (e.key === 'Enter') handleChat(); };
 </script>
 
 </body>
