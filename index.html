@@ -3,77 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI NEXUS | G4F EDITION</title>
+    <title>AI NEXUS | MULTI-PROVIDER</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #090e1a; --card: #151c2c; --accent: #0ea5e9; --text: #f1f5f9; }
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
         .container { width: 95%; max-width: 750px; height: 85vh; background: var(--card); border-radius: 16px; display: flex; flex-direction: column; border: 1px solid #1e293b; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
-        .header { padding: 18px 25px; background: rgba(30, 41, 59, 0.5); border-bottom: 1px solid #334155; display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 1.1rem; }
-        .dot { width: 10px; height: 10px; background: #10b981; border-radius: 50%; box-shadow: 0 0 10px #10b981; }
-        #chat-window { flex: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 15px; }
-        .msg { max-width: 80%; padding: 12px 16px; border-radius: 14px; line-height: 1.5; font-size: 0.95rem; word-wrap: break-word; }
-        .user { align-self: flex-end; background: var(--accent); color: white; border-bottom-right-radius: 2px; }
-        .ai { align-self: flex-start; background: #2d3748; color: #cbd5e0; border-bottom-left-radius: 2px; }
-        .input-area { padding: 20px; background: #090e1a; display: flex; gap: 12px; border-radius: 0 0 16px 16px; }
+        .header { padding: 18px 25px; background: rgba(30, 41, 59, 0.5); border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+        .status-area { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: #94a3b8; }
+        .dot { width: 10px; height: 10px; background: #10b981; border-radius: 50%; }
+        #chat { flex: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 15px; }
+        .msg { max-width: 80%; padding: 12px 16px; border-radius: 14px; line-height: 1.5; font-size: 0.95rem; }
+        .user { align-self: flex-end; background: var(--accent); color: white; }
+        .ai { align-self: flex-start; background: #2d3748; }
+        .input-area { padding: 20px; background: #090e1a; display: flex; gap: 12px; }
         input { flex: 1; background: #1a202c; border: 1px solid #2d3748; padding: 14px; border-radius: 10px; color: white; outline: none; }
-        input:focus { border-color: var(--accent); }
-        button { background: var(--accent); color: white; border: none; padding: 0 25px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        button:hover { opacity: 0.9; }
-        #typing { font-size: 0.8rem; color: #718096; padding-left: 25px; display: none; }
+        button { background: var(--accent); color: white; border: none; padding: 0 25px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .error { color: #f87171; font-size: 0.75rem; margin-top: 5px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header"><div class="dot"></div> G4F AI HUB</div>
-    <div id="chat-window">
-        <div class="msg ai">Hello! I am connected via G4F. Ask me anything for free.</div>
+    <div class="header">
+        <span style="font-weight: 600;">AI NEXUS MULTI-AI</span>
+        <div class="status-area"><div class="dot"></div> <span id="current-model">Checking Free Nodes...</span></div>
     </div>
-    <div id="typing">AI is generating...</div>
+    <div id="chat">
+        <div class="msg ai">I will try every available free model until I get a response. Type below!</div>
+    </div>
     <div class="input-area">
-        <input type="text" id="userInput" placeholder="Ask g4f..." autocomplete="off">
+        <input type="text" id="userInput" placeholder="Ask anything..." autocomplete="off">
         <button id="sendBtn">SEND</button>
     </div>
 </div>
 
-<script type="module">
-    import Client from 'https://g4f.dev/dist/js/client.js';
-
-    const chatWindow = document.getElementById('chat-window');
+<script>
+    const chat = document.getElementById('chat');
     const input = document.getElementById('userInput');
     const btn = document.getElementById('sendBtn');
-    const typing = document.getElementById('typing');
+    const modelStatus = document.getElementById('current-model');
 
-    const client = new Client();
+    // LIST OF FREE 2026 MODELS TO TRY IN ORDER
+    const freeModels = [
+        "google/gemma-3-27b:free",
+        "meta-llama/llama-3.2-3b-instruct:free",
+        "mistralai/mistral-7b-instruct:free",
+        "phi-3-mini-4k-instruct:free",
+        "openrouter/auto" // This is the final backup
+    ];
 
-    async function handleChat() {
+    async function askAI() {
         const text = input.value.trim();
         if (!text) return;
 
-        // User message
         appendMsg(text, 'user');
         input.value = '';
-        typing.style.display = 'block';
+        const aiBubble = appendMsg("Connecting...", 'ai');
+        
+        // Loop through models until one works
+        let success = false;
+        for (let model of freeModels) {
+            if (success) break;
+            
+            modelStatus.innerText = `Trying: ${model.split('/')[1]}`;
+            
+            try {
+                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        // In 2026, OpenRouter's free models often work with a generic key 
+                        // or a free trial key you can get from their site for $0.
+                        "Authorization": "Bearer sk-or-v1-YOUR_FREE_KEY_HERE" 
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        messages: [{ role: "user", content: text }]
+                    })
+                });
 
-        // Placeholder for AI
-        const aiBubble = appendMsg("...", 'ai');
+                const data = await response.json();
+                if (data.choices && data.choices[0]) {
+                    aiBubble.innerText = data.choices[0].message.content;
+                    success = true;
+                    modelStatus.innerText = "System Online";
+                }
+            } catch (err) {
+                console.log(`${model} failed, trying next...`);
+            }
+        }
 
-        try {
-            // Using G4F to get GPT-4 level response for free
-            const result = await client.chat.completions.create({
-                model: 'gpt-4o', // You can try 'gpt-4', 'gemini', or 'llama-3'
-                messages: [{ role: 'user', content: text }]
-            });
-
-            const responseText = result.choices[0].message.content;
-            aiBubble.innerText = responseText;
-        } catch (error) {
-            aiBubble.innerText = "Error: Provider unavailable. Try again in a moment.";
-            console.error(error);
-        } finally {
-            typing.style.display = 'none';
-            chatWindow.scrollTop = chatWindow.scrollHeight;
+        if (!success) {
+            aiBubble.innerText = "All free nodes are currently busy. Please try again in 1 minute.";
+            modelStatus.innerText = "All Nodes Busy";
         }
     }
 
@@ -81,13 +104,13 @@
         const div = document.createElement('div');
         div.className = `msg ${type}`;
         div.innerText = text;
-        chatWindow.appendChild(div);
-        chatWindow.scrollTop = chatWindow.scrollHeight;
+        chat.appendChild(div);
+        chat.scrollTop = chat.scrollHeight;
         return div;
     }
 
-    btn.onclick = handleChat;
-    input.onkeypress = (e) => { if (e.key === 'Enter') handleChat(); };
+    btn.onclick = askAI;
+    input.onkeypress = (e) => { if(e.key === 'Enter') askAI(); };
 </script>
 
 </body>
